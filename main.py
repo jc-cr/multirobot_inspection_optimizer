@@ -277,25 +277,149 @@ class MultiRobotInspectionPlanner:
         }
     
     def get_results(self):
-        """Get the results of the optimization."""
+        """
+            Get detailed results of the optimization with robot-specific information for each waypoint.
+            Includes timesteps and battery levels for each robot at each waypoint.
+            
+            Returns:
+                dict: Detailed information about the robot paths and state at each waypoint
+        """
         if not self.solution:
             return "No solution available. Run solve() first."
         
-        results = self._extract_solution()
+        # Get basic results
+        basic_results = self._extract_solution()
         
-        visited_aerial = results['visited_aerial']
-        visited_ground = results['visited_ground']
+        # Calculate detailed information for each robot
+        aerial_details = self._calculate_robot_details(
+            self.aerial_route, 
+            self.aerial_times, 
+            self.b_aerial, 
+            self.t_aerial,
+            self.B_aerial,
+            "aerial"
+        )
         
-        summary = {
-            'total_waypoints': self.num_waypoints,
-            'visited_by_aerial': len(visited_aerial),
-            'visited_by_ground': len(visited_ground),
-            'aerial_route': self.aerial_route,
-            'ground_route': self.ground_route,
-            'objective_value': pulp.value(self.solution.objective)
+        ground_details = self._calculate_robot_details(
+            self.ground_route, 
+            self.ground_times, 
+            self.b_ground, 
+            self.t_ground,
+            self.B_ground,
+            "ground"
+        )
+        
+        # Compile comprehensive results
+        detailed_results = {
+            'summary': {
+                'map_size': self.map_size,
+                'total_waypoints': self.num_waypoints,
+                'visited_by_aerial': len(basic_results['visited_aerial']),
+                'visited_by_ground': len(basic_results['visited_ground']),
+                'objective_value': pulp.value(self.solution.objective)
+            },
+            'aerial_robot': aerial_details,
+            'ground_robot': ground_details
         }
         
-        return summary
+        return detailed_results
+
+    def _calculate_robot_details(self, route, completion_times, battery_rate, inspection_time, initial_battery, robot_type):
+        """
+        Calculate detailed information for a robot's journey including timesteps and battery levels.
+        
+        Args:
+            route: List of waypoint indices the robot visits
+            completion_times: Dictionary of completion times at each waypoint
+            battery_rate: Battery depletion rate per unit distance/time
+            inspection_time: Time required for inspection at each waypoint
+            initial_battery: Initial battery level
+            robot_type: String identifier ("aerial" or "ground")
+        
+        Returns:
+            dict: Detailed information about the robot's journey
+        """
+        if not route:
+            return {"error": "No route available"}
+        
+        details = {
+            "route": route,
+            "waypoints": []
+        }
+        
+        # Get coordinates for all points
+        points = [self._get_point_coordinates(point_idx) for point_idx in route]
+        
+        # Initialize tracking variables
+        current_time = 0
+        current_battery = initial_battery
+        
+        # Skip depot at beginning (index 0)
+        for i in range(1, len(route)):
+            prev_idx = route[i-1]
+            curr_idx = route[i]
+            
+            # Calculate travel distance
+            prev_point = points[i-1]
+            curr_point = points[i]
+            travel_distance = self._calculate_distance(prev_point, curr_point)
+            
+            # Calculate travel time (assume speed = 1)
+            travel_time = travel_distance
+            
+            # Update time after travel
+            arrival_time = current_time + travel_time
+            
+            # Calculate battery consumption for travel
+            battery_consumed_travel = travel_distance * battery_rate
+            battery_after_travel = current_battery - battery_consumed_travel
+            
+            waypoint_info = {
+                "waypoint_id": curr_idx if curr_idx < self.num_waypoints else "depot",
+                "coordinates": curr_point,
+                "arrival_time": arrival_time,
+                "battery_level_on_arrival": battery_after_travel,
+            }
+            
+            # If this is a waypoint (not depot) that requires inspection
+            if curr_idx < self.num_waypoints:
+                # Add inspection details
+                completion_time = completion_times.get(curr_idx, arrival_time + inspection_time)
+                battery_consumed_inspection = inspection_time * battery_rate
+                battery_after_inspection = battery_after_travel - battery_consumed_inspection
+                
+                waypoint_info.update({
+                    "inspection_duration": inspection_time,
+                    "completion_time": completion_time,
+                    "battery_level_after_inspection": battery_after_inspection
+                })
+                
+                # Update tracking variables for next iteration
+                current_time = completion_time
+                current_battery = battery_after_inspection
+            else:
+                # This is the depot at the end
+                current_time = arrival_time
+                current_battery = battery_after_travel
+            
+            details["waypoints"].append(waypoint_info)
+        
+        # Add overall statistics
+        details["total_travel_distance"] = sum(self._calculate_distance(points[i-1], points[i]) for i in range(1, len(points)))
+        details["total_travel_time"] = details["waypoints"][-1]["arrival_time"] if route[-1] >= self.num_waypoints else details["waypoints"][-1]["completion_time"]
+        details["final_battery_level"] = details["waypoints"][-1]["battery_level_on_arrival"] if route[-1] >= self.num_waypoints else details["waypoints"][-1]["battery_level_after_inspection"]
+        details["battery_consumed"] = initial_battery - details["final_battery_level"]
+        
+        return details
+
+    def _get_point_coordinates(self, point_idx):
+        """Get coordinates for a point (waypoint or depot)."""
+        if point_idx < self.num_waypoints:
+            return self.waypoints[point_idx]
+        elif point_idx == self.num_waypoints:
+            return self.depot_aerial
+        else:
+            return self.depot_ground
 
 class PathVisualizer:
     def __init__(self, planner):
@@ -695,13 +819,21 @@ if __name__ == "__main__":
     success = planner.solve()
     
     if success:
-        # Create visualizer
-        visualizer = PathVisualizer(planner)
+        # Get results
+        results = planner.get_results()
+
+        # save to txt file
+        with open("results.txt", "w") as f:
+            f.write(str(results))
         
-        # Create and display animation
-        animation = visualizer.create_animation(fps=30, save_path="animation.mp4")
         
-        # Save static image
-        visualizer.save_final_paths_image("final_paths.png")
+       #  # Create visualizer
+       #  visualizer = PathVisualizer(planner)
+       #  
+       #  # Create and display animation
+       #  animation = visualizer.create_animation(fps=30, save_path="animation.mp4")
+       #  
+       #  # Save static image
+       #  visualizer.save_final_paths_image("final_paths.png")
     else:
         print("Failed to find an optimal solution.")
