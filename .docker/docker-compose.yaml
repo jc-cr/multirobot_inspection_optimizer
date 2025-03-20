@@ -1,0 +1,11 @@
+# File: .docker/docker-compose.yml
+services:
+  solver:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ..:/app
+
+    command: bash -c "python3 main.py"
