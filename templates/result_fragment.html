@@ -1,0 +1,9 @@
+{% if solution.status == 'optimal' %}
+    {% if img_base64 %}
+        <img src="data:image/png;base64,{{ img_base64 }}" 
+             alt="Optimization Result" 
+             style="max-width: 100%; max-height: 80vh; margin-top: 20px;">
+    {% endif %}
+{% else %}
+    <p>No optimal solution found: {{ solution.message }}</p>
+{% endif %}

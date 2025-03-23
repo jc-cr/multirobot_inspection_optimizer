@@ -7,5 +7,6 @@ services:
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ..:/app
-
-    command: bash -c "python3 main.py"
+    ports:
+      - "5000:5000"
+    command: bash -c "python3 server.py"
