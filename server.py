@@ -5,7 +5,7 @@ import base64
 import matplotlib
 matplotlib.use('Agg')
 import random
-from main import solve_robot_inspection_problem, visualize_solution
+from solver import solve_robot_inspection_problem, visualize_solution
 
 app = Quart(__name__)
 
@@ -28,6 +28,7 @@ async def optimize():
     ground_max_time = float(form.get('ground_max_time', 60.0))
     aerial_inspection_time = float(form.get('aerial_inspection_time', 1.0))
     ground_inspection_time = float(form.get('ground_inspection_time', 3.0))
+
     
     # Generate random waypoints
     waypoints = [
