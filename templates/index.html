@@ -12,6 +12,7 @@
             padding: 0;
             display: grid;
             grid-template-columns: 350px 1fr;
+            grid-template-rows: 1fr auto;
             height: 100vh;
         }
         
@@ -19,6 +20,15 @@
             background: #f5f5f5;
             padding: 20px;
             overflow-y: auto;
+            grid-row: 1 / span 2;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .visualization {
@@ -27,6 +37,20 @@
             justify-content: center;
             align-items: center;
             background: white;
+            grid-column: 2;
+            grid-row: 1;
+            overflow: auto;
+        }
+        
+        .control-panel {
+            grid-column: 2;
+            grid-row: 2;
+            padding: 20px;
+            background: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 1px solid #ddd;
         }
         
         .form-group {
@@ -36,11 +60,12 @@
         label {
             display: block;
             margin-bottom: 4px;
+            font-size: 0.9em;
         }
         
         input {
-            width: 90%;
-            padding: 4px;
+            width: 50%;
+            padding: 3px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
@@ -50,20 +75,39 @@
             color: white;
             border: none;
             border-radius: 4px;
-            padding: 10px;
-            width: 90%;
-
+            padding: 10px 20px;
             cursor: pointer;
+            font-size: 1em;
+        }
+        
+        button.secondary {
+            background: #4CAF50;
         }
         
         button:hover {
-            background: #0052a3;
+            opacity: 0.9;
         }
         
         .results {
             margin-top: 20px;
             padding: 15px;
             background: #f0f7ff;
+            border-radius: 4px;
+        }
+        
+        .waypoint-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        
+        .waypoint-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 4px;
+            background: #f0f0f0;
             border-radius: 4px;
         }
         
@@ -78,61 +122,137 @@
         .htmx-request .submit-btn {
             display: none;
         }
+        
+        .depot {
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #e6f7ff;
+            border-radius: 4px;
+        }
+        
+        h1 {
+            margin-top: 0;
+            font-size: 1.6em;
+            color: #333;
+        }
+        
+        h2 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+        
+        h3 {
+            margin-top: 12px;
+            font-size: 1em;
+            color: #555;
+        }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <h1>Robot Inspection Optimizer</h1>
         
-        <form hx-post="/api/optimize" 
+        <form id="optimization-form" hx-post="/api/optimize" 
               hx-target="#results-container"
               hx-swap="innerHTML"
               hx-indicator=".loading">
             
-            <h2>Map Settings</h2>
-            <div class="form-group">
-                <label for="map-width">Map Width</label>
-                <input type="number" name="map_width" id="map-width" value="30" min="10" max="100">
-            </div>
-            <div class="form-group">
-                <label for="map-height">Map Height</label>
-                <input type="number" name="map_height" id="map-height" value="30" min="10" max="100">
-            </div>
-            <div class="form-group">
-                <label for="num-waypoints">Waypoints</label>
-                <input type="number" name="num_waypoints" id="num-waypoints" value="1" min="1" max="20">
+            <div class="section">
+                <h2>Robot Parameters</h2>
+                
+                <h3>Aerial Robots</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <div class="form-group" style="flex: 0 0 48%;">
+                        <label for="num-aerial-robots">Number of Robots</label>
+                        <input type="number" name="num_aerial_robots" id="num-aerial-robots" value="1" min="1" max="10">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 48%;">
+                        <label for="aerial-speed">Speed (meters/min)</label>
+                        <input type="number" name="aerial_speed" id="aerial-speed" value="5.0" min="0.1" step="0.1">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 48%;">
+                        <label for="aerial-max-time">Max Time (min)</label>
+                        <input type="number" name="aerial_max_time" id="aerial-max-time" value="30.0" min="1">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 48%;">
+                        <label for="aerial-inspection-time">Inspection Time (min)</label>
+                        <input type="number" name="aerial_inspection_time" id="aerial-inspection-time" value="1.0" min="0.1" step="0.1">
+                    </div>
+                </div>
+                
+                <h3>Ground Robots</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <div class="form-group" style="flex: 0 0 48%;">
+                        <label for="num-ground-robots">Number of Robots</label>
+                        <input type="number" name="num_ground_robots" id="num-ground-robots" value="1" min="1" max="10">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 48%;">
+                        <label for="ground-speed">Speed (meters/min)</label>
+                        <input type="number" name="ground_speed" id="ground-speed" value="2.0" min="0.1" step="0.1">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 48%;">
+                        <label for="ground-max-time">Max Time (min)</label>
+                        <input type="number" name="ground_max_time" id="ground-max-time" value="60.0" min="1">
+                    </div>
+                    <div class="form-group" style="flex: 0 0 48%;">
+                        <label for="ground-inspection-time">Inspection Time (min)</label>
+                        <input type="number" name="ground_inspection_time" id="ground-inspection-time" value="3.0" min="0.1" step="0.1">
+                    </div>
+                </div>
             </div>
             
-            <h2>Aerial Robot</h2>
-            <div class="form-group">
-                <label for="aerial-speed">Speed (meters/min)</label>
-                <input type="number" name="aerial_speed" id="aerial-speed" value="5.0" min="0.1" step="0.1">
+            <div class="section">
+                <h2>Waypoints</h2>
+                
+                <div class="depot">
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <div style="flex: 0 0 48%;">
+                            <h3>Aerial Depot</h3>
+                            <div style="display: flex; gap: 5px;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="aerial-depot-x">X</label>
+                                    <input type="number" name="aerial_depot_x" id="aerial-depot-x" value="0" min="0" step="0.1">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="aerial-depot-y">Y</label>
+                                    <input type="number" name="aerial_depot_y" id="aerial-depot-y" value="0" min="0" step="0.1">
+                                </div>
+                            </div>
+                        </div>
+                        <div style="flex: 0 0 48%;">
+                            <h3>Ground Depot</h3>
+                            <div style="display: flex; gap: 5px;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="ground-depot-x">X</label>
+                                    <input type="number" name="ground_depot_x" id="ground-depot-x" value="30" min="0" step="0.1">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label for="ground-depot-y">Y</label>
+                                    <input type="number" name="ground_depot_y" id="ground-depot-y" value="0" min="0" step="0.1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hidden input to store default map dimensions for random waypoint generation -->
+                <input type="hidden" name="map_width" id="map-width" value="30">
+                <input type="hidden" name="map_height" id="map-height" value="30">
+                <input type="hidden" name="num_waypoints" id="num-waypoints" value="0">
+                
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="button" class="secondary" id="add-waypoint">+ Manual Waypoint</button>
+                    <button type="button" class="secondary" id="add-random">+ Random Waypoint</button>
+                </div>
+                
+                <div class="waypoint-list" id="waypoint-list">
+                    <!-- Waypoints will be added here dynamically -->
+                </div>
+                
+                <!-- Hidden input to store waypoints -->
+                <input type="hidden" name="waypoints" id="waypoints-json" value="[]">
             </div>
-            <div class="form-group">
-                <label for="aerial-max-time"> Max Operating Time (min)</label>
-                <input type="number" name="aerial_max_time" id="aerial-max-time" value="30.0" min="1">
-            </div>
-            <div class="form-group">
-                <label for="aerial-inspection-time">Inspection Time (min)</label>
-                <input type="number" name="aerial_inspection_time" id="aerial-inspection-time" value="1.0" min="0.1" step="0.1">
-            </div>
-            
-            <h2>Ground Robot</h2>
-            <div class="form-group">
-                <label for="ground-speed">Speed (meters/min)</label>
-                <input type="number" name="ground_speed" id="ground-speed" value="2.0" min="0.1" step="0.1">
-            </div>
-            <div class="form-group">
-                <label for="ground-max-time"> Max Operating Time (min)</label>
-                <input type="number" name="ground_max_time" id="ground-max-time" value="60.0" min="1">
-            </div>
-            <div class="form-group">
-                <label for="ground-inspection-time">Inspection Time (min)</label>
-                <input type="number" name="ground_inspection_time" id="ground-inspection-time" value="3.0" min="0.1" step="0.1">
-            </div>
-            
-            <button type="submit" class="submit-btn">Run Optimization</button>
-            <div class="loading">Optimizing...</div>
         </form>
     </div>
     
@@ -142,5 +262,72 @@
         </div>
     </div>
     
+    <div class="control-panel">
+        <button type="submit" form="optimization-form" class="submit-btn">Solve</button>
+        <div class="loading">Optimizing...</div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let waypoints = [];
+            const waypointsList = document.getElementById('waypoint-list');
+            const waypointsJSON = document.getElementById('waypoints-json');
+            
+            // Function to update waypoints display and hidden input
+            function updateWaypoints() {
+                // Clear the list
+                waypointsList.innerHTML = '';
+                
+                // Add waypoints to the list (newest first)
+                waypoints.slice().reverse().forEach((waypoint, index) => {
+                    const waypointIndex = waypoints.length - 1 - index;
+                    const item = document.createElement('div');
+                    item.className = 'waypoint-item';
+                    item.innerHTML = `
+                        <div>Waypoint ${waypointIndex}: (${waypoint[0].toFixed(1)}, ${waypoint[1].toFixed(1)})</div>
+                        <button type="button" data-index="${waypointIndex}" class="remove-waypoint" style="background: #ff4d4d; padding: 4px 8px;">Remove</button>
+                    `;
+                    waypointsList.appendChild(item);
+                });
+                
+                // Update the hidden input
+                waypointsJSON.value = JSON.stringify(waypoints);
+            }
+            
+            // Add Manual Waypoint
+            document.getElementById('add-waypoint').addEventListener('click', function() {
+                const mapWidth = parseFloat(document.getElementById('map-width').value);
+                const mapHeight = parseFloat(document.getElementById('map-height').value);
+                
+                // Default to middle of map
+                const x = mapWidth / 2;
+                const y = mapHeight / 2;
+                
+                waypoints.push([x, y]);
+                updateWaypoints();
+            });
+            
+            // Add Random Waypoint
+            document.getElementById('add-random').addEventListener('click', function() {
+                const mapWidth = parseFloat(document.getElementById('map-width').value);
+                const mapHeight = parseFloat(document.getElementById('map-height').value);
+                
+                const x = Math.random() * mapWidth;
+                const y = Math.random() * mapHeight;
+                
+                waypoints.push([x, y]);
+                updateWaypoints();
+            });
+            
+            // Remove Waypoint (using event delegation)
+            waypointsList.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-waypoint')) {
+                    const index = parseInt(e.target.dataset.index);
+                    waypoints.splice(index, 1);
+                    updateWaypoints();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

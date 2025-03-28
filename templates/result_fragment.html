@@ -1,9 +1,50 @@
 {% if solution.status == 'optimal' %}
-    {% if img_base64 %}
-        <img src="data:image/png;base64,{{ img_base64 }}" 
-             alt="Optimization Result" 
-             style="max-width: 100%; max-height: 80vh; margin-top: 20px;">
-    {% endif %}
+    <div style="text-align: center;">
+        <h2>Optimization Results</h2>
+        <p>Successfully inspected {{ solution.objective_value }} waypoints</p>
+        
+        {% if img_base64 %}
+            <img src="data:image/png;base64,{{ img_base64 }}" 
+                 alt="Optimization Result" 
+                 style="max-width: 100%; max-height: 80vh; margin-top: 20px;">
+        {% endif %}
+        
+        <div style="margin-top: 20px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <h3>Solution Details:</h3>
+            
+            <h4>Aerial Robots:</h4>
+            <ul>
+                {% for k, distance in solution.aerial_distances.items() %}
+                    {% if distance > 0 %}
+                        <li>
+                            Aerial Robot {{ k }}: 
+                            Distance: {{ "%.2f"|format(distance) }} units, 
+                            Time: {{ "%.2f"|format(solution.total_aerial_times[k]) }} minutes, 
+                            Waypoints: {{ solution.aerial_routes[k][1:-1]|length }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            
+            <h4>Ground Robots:</h4>
+            <ul>
+                {% for l, distance in solution.ground_distances.items() %}
+                    {% if distance > 0 %}
+                        <li>
+                            Ground Robot {{ l }}: 
+                            Distance: {{ "%.2f"|format(distance) }} units, 
+                            Time: {{ "%.2f"|format(solution.total_ground_times[l]) }} minutes, 
+                            Waypoints: {{ solution.ground_routes[l][1:-1]|length }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 {% else %}
-    <p>No optimal solution found: {{ solution.message }}</p>
+    <div style="text-align: center; padding: 20px;">
+        <h2>No Optimal Solution Found</h2>
+        <p>{{ solution.message }}</p>
+        <p>Try changing parameters or reducing the number of waypoints.</p>
+    </div>
 {% endif %}
