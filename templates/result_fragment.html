@@ -3,11 +3,138 @@
         <h2>Optimization Results</h2>
         <p>Successfully inspected {{ solution.objective_value }} waypoints</p>
         
-        {% if img_base64 %}
-            <img src="data:image/png;base64,{{ img_base64 }}" 
-                 alt="Optimization Result" 
-                 style="max-width: 100%; max-height: 80vh; margin-top: 20px;">
-        {% endif %}
+        <div id="animation-container">
+            <!-- Animation display -->
+            <img id="animation-frame" src="data:image/png;base64,{{ animation_frames[0] }}" 
+                alt="Animation Frame" 
+                style="max-width: 100%; max-height: 80vh;">
+        </div>
+        
+        <!-- Time and controls -->
+        <div style="margin: 10px auto; width: 80%; max-width: 800px; display: flex; justify-content: space-between; align-items: center;">
+            <div id="sim-time" style="font-size: 16px; font-weight: bold;">Simulation Time: 0.0 minutes</div>
+            <button id="replay-btn" style="background: #0066cc; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">Replay Animation</button>
+        </div>
+        
+        <!-- Time slider -->
+        <div style="margin: 10px auto; width: 80%; max-width: 800px; display: flex; align-items: center;">
+            <input type="range" id="time-slider" min="0" max="100" value="0" style="flex-grow: 1; margin-right: 10px;">
+            <button id="play-pause-btn" style="background: #4CAF50; color: white; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer;">Pause</button>
+        </div>
+        
+        <!-- Hidden animation frames -->
+        <div id="frame-data" style="display: none;">
+            {% for frame in animation_frames %}
+                <div class="animation-frame-data" data-frame="{{ frame }}"></div>
+            {% endfor %}
+            <div class="final-image-data" data-image="{{ img_base64 }}"></div>
+        </div>
+        
+        <script>
+            (function setupAnimation() {
+                // Get all frames
+                const frameElements = document.querySelectorAll('.animation-frame-data');
+                const frames = Array.from(frameElements).map(el => el.dataset.frame);
+                const finalImage = document.querySelector('.final-image-data').dataset.image;
+                const frameDisplay = document.getElementById('animation-frame');
+                const simTimeDisplay = document.getElementById('sim-time');
+                const replayButton = document.getElementById('replay-btn');
+                const playPauseButton = document.getElementById('play-pause-btn');
+                const timeSlider = document.getElementById('time-slider');
+                
+                let currentFrame = 0;
+                let animationTimer = null;
+                let isPlaying = true;
+                
+                // Update time slider max value
+                timeSlider.max = frames.length - 1;
+                
+                // Function to extract time from image title
+                function extractTimeFromImage(dataUrl) {
+                    // This is just a placeholder - we can't actually parse the image
+                    // In practice, we'll use the frame index to approximate
+                    return currentFrame;
+                }
+                
+                // Function to show a specific frame
+                function showFrame(index) {
+                    // Clear any existing timer
+                    if (animationTimer) {
+                        clearTimeout(animationTimer);
+                    }
+                    
+                    if (index < frames.length) {
+                        frameDisplay.src = 'data:image/png;base64,' + frames[index];
+                        currentFrame = index;
+                        
+                        // Update time slider
+                        timeSlider.value = index;
+                        
+                        // Extract time from the frame title (approximate)
+                        const regex = /Time: (\d+\.\d+)/;
+                        const base64Data = frames[index];
+                        
+                        // Since we can't parse the time from the image, we'll take it from the frame index
+                        // This is approximate but gives a visual indication
+                        simTimeDisplay.textContent = `Frame ${index+1} of ${frames.length}`;
+                        
+                        // Schedule next frame if still playing
+                        if (isPlaying && index < frames.length - 1) {
+                            animationTimer = setTimeout(() => showFrame(index + 1), 1000);
+                        } else if (index >= frames.length - 1) {
+                            playPauseButton.textContent = 'Play';
+                            isPlaying = false;
+                        }
+                    } else {
+                        // Show final image when animation completes
+                        frameDisplay.src = 'data:image/png;base64,' + finalImage;
+                        playPauseButton.textContent = 'Play';
+                        isPlaying = false;
+                    }
+                }
+                
+                // Set up replay button
+                replayButton.addEventListener('click', function() {
+                    isPlaying = true;
+                    playPauseButton.textContent = 'Pause';
+                    showFrame(0);
+                });
+                
+                // Set up play/pause button
+                playPauseButton.addEventListener('click', function() {
+                    isPlaying = !isPlaying;
+                    
+                    if (isPlaying) {
+                        playPauseButton.textContent = 'Pause';
+                        // If we're at the end, start from beginning
+                        if (currentFrame >= frames.length - 1) {
+                            showFrame(0);
+                        } else {
+                            showFrame(currentFrame);
+                        }
+                    } else {
+                        playPauseButton.textContent = 'Play';
+                    }
+                });
+                
+                // Set up time slider
+                timeSlider.addEventListener('input', function() {
+                    // Pause animation when user manually adjusts
+                    isPlaying = false;
+                    playPauseButton.textContent = 'Play';
+                    
+                    if (animationTimer) {
+                        clearTimeout(animationTimer);
+                    }
+                    
+                    // Show the selected frame
+                    showFrame(parseInt(this.value));
+                });
+                
+                // Start animation with a small delay
+                setTimeout(() => showFrame(0), 100);
+            })();
+        </script>
         
         <div style="margin-top: 20px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
             <h3>Solution Details:</h3>
