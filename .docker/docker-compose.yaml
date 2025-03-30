@@ -8,7 +8,7 @@ services:
     environment:
       - MPLCONFIGDIR=/tmp/matplotlib
     volumes:
-      - ..:/app
+      - ../python:/app
     ports:
       - "5000:5000"
     command: bash -c "python3 solver.py"
@@ -16,3 +16,24 @@ services:
   server:
     extends: solver
     command: bash -c "python3 server.py"
+ 
+  latex:
+      user: "${UID:-1000}:${GID:-1000}"
+      build:
+        context: ..
+        dockerfile: .docker/Dockerfile.latex 
+      ports:
+        - "3000:3000"  # For LaTeX Workshop
+      working_dir: /project
+      command: tail -f /dev/null
+      volumes:
+        - ../report/src:/project/src
+        - ../report/output:/project/output
+        - ../report/figures:/project/figures
+        - ../report/include:/project/include
+      
+      #volumes:
+      #  - ../slides/src:/project/src
+      #  - ../slides/output:/project/output
+      #  - ../slides/figures:/project/figures
+      #  - ../slides/include:/project/include

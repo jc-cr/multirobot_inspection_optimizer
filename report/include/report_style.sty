@@ -1,0 +1,47 @@
+% report_style.sty
+\usepackage{graphicx}
+\graphicspath{{../figures/}}
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry} % Standard margins for 8.5" x 11" paper
+\renewcommand{\familydefault}{\sfdefault} % Sans-serif font
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage[T1]{fontenc} % set font encoding
+\usepackage[fontsize=11pt]{scrextend} % set font size to 11pt
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{booktabs}
+\usepackage{lipsum}
+\pagestyle{plain}
+% no section numbering
+\setcounter{secnumdepth}{-1}
+\usepackage{setspace}
+\singlespacing % Single spacing as required
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{comment}
+\usepackage{bm}
+\usepackage[breaklinks]{hyperref}
+\usepackage{float}
+\usepackage{tikz}
+\newcommand{\dpar}[1]{\left( #1 \right)}
+\newcommand{\dbrace}[1]{\left\{ #1 \right\}}
+\newcommand{\dmatrix}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+
+\usepackage{pgfgantt}
+
+% Convenient reference command
+\newcommand{\figref}[1]{Figure~\ref{#1}}
+\newcommand{\tabref}[1]{Table~\ref{#1}}
+
+% Tighten up spacing in itemize, enumerate, and description environments
+\setlist{noitemsep, topsep=4pt, parsep=0pt, partopsep=0pt}
+
+% If you want to specifically control just itemize environments
+\setlist[itemize]{noitemsep, topsep=3pt, parsep=0pt, partopsep=0pt, leftmargin=*}

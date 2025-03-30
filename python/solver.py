@@ -329,7 +329,7 @@ def solve_multi_robot_inspection_problem(
 
 def run_example():
 
-    from figures import visualize_multi_robot_solution
+    from solver_code.figures import visualize_multi_robot_solution
 
     """Run an example using the simplified multi-robot inspection solver."""
     # Create waypoints

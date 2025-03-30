@@ -6,8 +6,8 @@ import matplotlib
 matplotlib.use('Agg')
 import random
 import json
-from solver import solve_multi_robot_inspection_problem
-from figures import visualize_multi_robot_solution, generate_time_based_animation
+from solver_code.solver import solve_multi_robot_inspection_problem
+from solver_code.figures import visualize_multi_robot_solution, generate_time_based_animation
 
 app = Quart(__name__)
 

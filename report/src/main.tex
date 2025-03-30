@@ -1,0 +1,138 @@
+% !TEX root = main.tex
+\documentclass{article}
+\usepackage{../include/report_style}
+
+\title{Multi-Robot Waypoint Inspection Plan Mixed Integer Linear Programming Project}
+\author{Juan Carlos Cruz - ira406}
+\date{ME 6033 Linear and Mixed Integer Optimization}
+
+\begin{document}
+	\maketitle
+	\noindent%
+
+	\begin{abstract}
+		This report
+	\end{abstract}
+
+	\section{Introduction}
+
+		This work is motivated by a previous project the author has worked on involving a multi-robot approach to outdoor construction site inspection. 
+
+		Recent use of precast concrete elements which are manufactured off-site and then transported to the construction site has led to the need for more efficient inspection methods. 
+		The use of autonomous robots for such inspections is a promising approach as robot platforms can be equipped with a variety of sensors to enable rapid and accurate inspection which can be easily documented in cloud based systems.
+		Due to the nature of construction sites, objects are often moved from location to location, thus requiring a flexible inspection plan that can be adapted to the current state of the site.
+
+		One such approach is to use a multi-robot system where one robot type can quickly locate the correct inspection target and then a more specialized robot can perform the inspection.
+		The initial location of the inspection target could rapidly be done by aerial robot platforms, such as drones, which can cover large areas but due to their payload limitations cannot perform the inspection themselves.
+		A ground mobile robot platform could then be dispatched to the location of the inspection target to perform the actual inspection.
+
+		In such an approach, there are various details which must then be considered and implemented, however, in this report we will focus on the optimization of the inspection sequence planning. 
+
+		This paper presents a mixed integer linear programming (MILP) approach to the problem of multi-robot waypoint inspection planning.
+		The following sections will describe the problem formulation, modeling, implementation, and discussion of the results.
+
+	\section{Problem Formulation}
+
+		For the modeling of the problem we consider two robot types, an aerial robot and a ground mobile robot. 
+		The number of robots of each type is specified as a parameter of the problem.
+		Each robot type starts a depot location where they are charged and dispatched to the inspection targets.
+
+		The inspection targets are marked as waypoints in a 2D plane.
+		For any waypoint, an aerial robot must first be dispatched to the waypoint to verify it's location, only then can a ground robot visit the waypoint.
+		Each robot time has a fixed amount of time it must remain at the waypoint, this time is to simulate processing, verification, and/or inspection time by the respective robot type.
+
+		Each robot type has a limited operation time based on it's battery capacity.
+		Each robot type has a fixed speed it operates at.
+		Any dispatched robot must be able to return to the depot before the battery runs out.
+
+		For the purpose of this report we consider only a single inspection loop and model the problem such that the maximum number of waypoints are visited within that single loop.
+
+		The units used are minutes for time and meters for distance.
+
+		In the next section we will describe the mathematical formulation of the problem.
+
+	\section{Modeling}
+
+		\subsection{Definitions}
+
+
+			\subsubsection{Sets and Indices}
+
+				\begin{itemize}
+				\item $N$: Set of all waypoints indexed by $i \in {1, 2, \ldots, n}$
+				\item $K$: Set of aerial robots indexed by $k \in {1, 2, \ldots, k_{\max}}$
+				\item $L$: Set of ground robots indexed by $l \in {1, 2, \ldots, l_{\max}}$
+				\item $d_A$: Aerial robot depot
+				\item $d_G$: Ground robot depot
+				\end{itemize}
+
+			\subsubsection{Parameters}
+
+				\begin{itemize}
+				\item $p_i$: Location (coordinates) of waypoint $i \in N$
+				\item $p_{d_A}$: Location of aerial robot depot
+				\item $p_{d_G}$: Location of ground robot depot
+				\item $\text{dist}(i,j)$: Euclidean distance between locations $i$ and $j$
+				\item $v_A$: Speed of aerial robots (distance per minute)
+				\item $v_G$: Speed of ground robots (distance per minute)
+				\item $t_A^{\text{insp}}$: Inspection time for aerial robots at each waypoint (minutes)
+				\item $t_G^{\text{insp}}$: Inspection time for ground robots at each waypoint (minutes)
+				\item $T_A^{\max}$: Maximum operation time for each aerial robot (minutes)
+				\item $T_G^{\max}$: Maximum operation time for each ground robot (minutes)
+				\end{itemize}
+
+			\subsubsection{Derived Parameters}
+
+				\begin{itemize}
+				\item $t_{ij}^{A} = \frac{\text{dist}(i,j)}{v_A}$: Travel time for aerial robots from $i$ to $j$ (minutes)
+				\item $t_{ij}^{G} = \frac{\text{dist}(i,j)}{v_G}$: Travel time for ground robots from $i$ to $j$ (minutes)
+				\item $M_A$: Big-M value for aerial robot time constraints
+				\item $M_G$: Big-M value for ground robot time constraints
+				\end{itemize}
+
+			\subsubsection{Decision Variables}
+
+				\begin{itemize}
+				\item $v_i^{a,k}$: Binary variable equals 1 if aerial robot $k$ visits waypoint $i$, 0 otherwise
+				\item $v_i^{g,l}$: Binary variable equals 1 if ground robot $l$ visits waypoint $i$, 0 otherwise
+				\item $a_i^k$: Time when aerial robot $k$ completes inspection at waypoint $i$ (minutes)
+				\item $g_i^l$: Time when ground robot $l$ completes inspection at waypoint $i$ (minutes)
+				\item $\text{use}_k^a$: Binary variable equals 1 if aerial robot $k$ is used, 0 otherwise
+				\item $\text{use}_l^g$: Binary variable equals 1 if ground robot $l$ is used, 0 otherwise
+				\item $z_i^{k,l}$: Binary variable equals 1 if ground robot $l$ visits waypoint $i$ after aerial robot $k$ inspection, 0 otherwise
+				\end{itemize}
+
+
+		\subsection{Objective Function}
+
+			Since the goal of the problem is to maximize the number of waypoints visited, and a waypoint is only completely visited when a ground robot has visited it, we can define the objective function as the sum of all waypoints visited by ground robots.
+
+			\begin{equation}
+			\text{Maximize} \sum_{i \in N}\sum_{l \in L} v_i^{g,l}
+			\end{equation}
+		
+		\subsection{Constraints}
+			
+			Since we have multiple of either robot type, we must specify that each robot type can only visit a waypoint once.
+
+
+
+
+
+
+
+
+
+
+	\section{Implementation}
+
+	\section{Discussion}
+
+	\section{Conclusion}
+
+	\newpage
+	\bibliographystyle{IEEEtran}
+	\nocite{*}
+	\bibliography{ref.bib}
+
+\end{document}
