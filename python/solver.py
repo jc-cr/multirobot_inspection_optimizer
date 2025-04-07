@@ -63,8 +63,6 @@ def solve_multi_robot_inspection_problem(
     max_ground_travel = max(ground_travel_times.values())
     M_G = ground_max_time + max_ground_travel + ground_inspection_time
     
-    # Big-M value for subtour elimination
-    M_sub = n + 1
     
     # Sets for indexing
     N = range(n)  # Waypoints
@@ -108,10 +106,6 @@ def solve_multi_robot_inspection_problem(
     for i in N:
         model += pulp.lpSum(v_g[(i, l)] for l in L) <= 1
     
-    # 3. A ground robot can only visit a waypoint if an aerial robot has visited it
-    for i in N:
-        for l in L:
-            model += v_g[(i, l)] <= pulp.lpSum(v_a[(i, k)] for k in K)
     
     # 4. Each aerial robot can visit at most n waypoints (simplification)
     for k in K:
@@ -143,6 +137,12 @@ def solve_multi_robot_inspection_problem(
             # We estimate travel time based on distance from depot
             model += g_time[(i, l)] + ground_travel_times[(i, ground_depot_idx)] * v_g[(i, l)] <= ground_max_time + M_G * (1 - v_g[(i, l)])
     
+    # A ground robot can only visit a waypoint if an aerial robot has visited it
+    for i in N:
+        for l in L:
+            model += v_g[(i, l)] <= pulp.lpSum(v_a[(i, k)] for k in K)
+
+
     # 8. Precedence constraints: ground robot can only inspect after aerial robot has inspected
     for i in N:
         for k in K:

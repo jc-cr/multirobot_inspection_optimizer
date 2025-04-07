@@ -73,8 +73,8 @@
 				\item $p_{d_A}$: Location of aerial robot depot
 				\item $p_{d_G}$: Location of ground robot depot
 				\item $\text{dist}(i,j)$: Euclidean distance between locations $i$ and $j$
-				\item $v_A$: Speed of aerial robots (distance per minute)
-				\item $v_G$: Speed of ground robots (distance per minute)
+				\item $s_A$: Speed of aerial robots (distance per minute)
+				\item $s_G$: Speed of ground robots (distance per minute)
 				\item $t_A^{\text{insp}}$: Inspection time for aerial robots at each waypoint (minutes)
 				\item $t_G^{\text{insp}}$: Inspection time for ground robots at each waypoint (minutes)
 				\item $T_A^{\max}$: Maximum operation time for each aerial robot (minutes)
@@ -84,8 +84,8 @@
 			\subsubsection{Derived Parameters}
 
 				\begin{itemize}
-				\item $t_{ij}^{A} = \frac{\text{dist}(i,j)}{v_A}$: Travel time for aerial robots from $i$ to $j$ (minutes)
-				\item $t_{ij}^{G} = \frac{\text{dist}(i,j)}{v_G}$: Travel time for ground robots from $i$ to $j$ (minutes)
+				\item $t_{ij}^{A} = \frac{\text{dist}(i,j)}{s_A}$: Travel time for aerial robots from $i$ to $j$ (minutes)
+				\item $t_{ij}^{G} = \frac{\text{dist}(i,j)}{s_G}$: Travel time for ground robots from $i$ to $j$ (minutes)
 				\item $M_A$: Big-M value for aerial robot time constraints
 				\item $M_G$: Big-M value for ground robot time constraints
 				\end{itemize}
@@ -93,8 +93,8 @@
 			\subsubsection{Decision Variables}
 
 				\begin{itemize}
-				\item $v_i^{a,k}$: Binary variable equals 1 if aerial robot $k$ visits waypoint $i$, 0 otherwise
-				\item $v_i^{g,l}$: Binary variable equals 1 if ground robot $l$ visits waypoint $i$, 0 otherwise
+				\item $w_i^{a,k}$: Binary variable equals 1 if aerial robot $k$ visits waypoint $i$, 0 otherwise
+				\item $w_i^{g,l}$: Binary variable equals 1 if ground robot $l$ visits waypoint $i$, 0 otherwise
 				\item $a_i^k$: Time when aerial robot $k$ completes inspection at waypoint $i$ (minutes)
 				\item $g_i^l$: Time when ground robot $l$ completes inspection at waypoint $i$ (minutes)
 				\item $\text{use}_k^a$: Binary variable equals 1 if aerial robot $k$ is used, 0 otherwise
@@ -108,20 +108,142 @@
 			Since the goal of the problem is to maximize the number of waypoints visited, and a waypoint is only completely visited when a ground robot has visited it, we can define the objective function as the sum of all waypoints visited by ground robots.
 
 			\begin{equation}
-			\text{Maximize} \sum_{i \in N}\sum_{l \in L} v_i^{g,l}
+			\text{Maximize} \sum_{i \in N}\sum_{l \in L} w_i^{g,l}
 			\end{equation}
 		
+
 		\subsection{Constraints}
+
+			\subsubsection{Assignment Constraints}
 			
-			Since we have multiple of either robot type, we must specify that each robot type can only visit a waypoint once.
+				To ensure that each waypoint is assigned to at most one aerial robot and one ground robot, we can state that the sum of a robot type which visits a waypoint must be less than or equal to 1.
+
+				\begin{equation}
+				\sum_{k \in K} w_i^{a,k} \leq 1 \quad \forall i \in N
+				\end{equation}
+
+				\begin{equation}
+				\sum_{l \in L} w_i^{g,l} \leq 1 \quad \forall i \in N
+				\end{equation}
+
+			\subsubsection{Robot Usage Constraints}
+
+				In order to capture the usage of a robot type for an inspection we must specify that \textit{A robot is used if and only if it visits at least one waypoint}.
+
+				The IF statement can be expressed by stating that if the $use$ binary variable is 1, then the sum of waypoints visited by that robot type must be greater than or equal to 1.
+
+				The ONLY IF statement can be expressed by stating that if the sum of waypoints visited by that robot type is greater than or equal to 1, then the $use$ binary variable must be 1. 
+
+				Since there are $n$ waypoints which could sum up to $n$, we can multiply the $use$ binary variable by $n$ to ensure that the sum of waypoints visited is less than or equal to $n$. In the case that the $use$ binary variable is 0, the sum of waypoints visited by the robot would be forced to be 0.
+
+				Then for aerial robots we have:
+				\begin{equation}
+				\sum_{i \in N} w_i^{a,k} \geq \text{use}_k^a \quad \forall k \in K
+				\end{equation}
+
+				\begin{equation}
+				\sum_{i \in N} w_i^{a,k} \leq n \cdot \text{use}_k^a \quad \forall k \in K
+				\end{equation}
+
+				And for ground robots we have:
+
+				\begin{equation}
+				\sum_{i \in N} w_i^{g,l} \geq \text{use}_l^g \quad \forall l \in L
+				\end{equation}
+
+				\begin{equation}
+				\sum_{i \in N} w_i^{g,l} \leq n \cdot \text{use}_l^g \quad \forall l \in L
+				\end{equation}
 
 
+			\subsubsection{Precedence Constraints}
+
+				For a ground robot to be able to visit a waypoint, it must have first been visited by an aerial robot. 
+				Then for any waypoint visited by the ground robot, the visit binary for that waypoint by an aerial robot must be at least 1.	
+
+				\begin{equation}
+ 					v_i^{g,l} \leq \sum_{k \in K} v_i^{a,k} \text{for all} i \in N, l \in L
+				\end{equation}
 
 
+				However, this constraint does not enforce any timing constraints. For that we must add that timestamp the ground robot completes its inspection at a waypoint $i$, $g_i^l$, must be greater to or equal to the timestamp of when the aerial robot robot completed it's inspection of the waypoint.
+				
+				We must be careful here though and filter for any robot type which was not used in the inspection loop and ground robots which are not visiting that specific waypoint. 
 
+				To do so we can use a big M value to ensure a linear system. The big M value ensures that if both of the aforementioned conditions are met, then the RHS of the following equation will be satisfied.
 
+				\begin{equation}
+					g_i^l \geq a_i^k - M_G \cdot (1 - z_i^{k,l}) - M_G \cdot (2 - \text{use}_k^a - \text{use}_l^g) \quad \forall i \in N, \forall k \in K, \forall l \in L
+				\end{equation}
 
+				
 
+				\begin{comment}
+					These four constraints ensure that z_i^{k,l} can only be 1 if all of the following are true:
+
+					Ground robot l visits waypoint i (v_i^{g,l} = 1)
+					Aerial robot k visits waypoint i (v_i^{a,k} = 1)
+					Aerial robot k is being used (use_k^a = 1)
+					Ground robot l is being used (use_l^g = 1)
+				\end{comment}
+
+				\begin{equation}
+				w_i^{g,l} \leq \sum_{k \in K} w_i^{a,k} \quad \forall i \in N, \forall l \in L
+				\end{equation}
+				Define relationship between aerial robot $k$ and ground robot $l$ for waypoint $i$:
+				\begin{equation}
+				z_i^{k,l} \leq w_i^{g,l} \quad \forall i \in N, \forall k \in K, \forall l \in L
+				\end{equation}
+				\begin{equation}
+				z_i^{k,l} \leq w_i^{a,k} \quad \forall i \in N, \forall k \in K, \forall l \in L
+				\end{equation}
+				\begin{equation}
+				z_i^{k,l} \leq \text{use}_k^a \quad \forall i \in N, \forall k \in K, \forall l \in L
+				\end{equation}
+				\begin{equation}
+				z_i^{k,l} \leq \text{use}_l^g \quad \forall i \in N, \forall k \in K, \forall l \in L
+				\end{equation}
+				\begin{equation}
+				z_i^{k,l} \geq w_i^{g,l} + w_i^{a,k} + \text{use}_k^a + \text{use}_l^g - 3 \quad \forall i \in N, \forall k \in K, \forall l \in L
+				\end{equation}
+
+				Timing relationship between aerial and ground robot inspections:
+
+			\subsubsection{Time Constraints}
+
+				Minimum inspection time at each waypoint:
+				\begin{equation}
+				a_i^k \geq t_A^{\text{insp}} \cdot w_i^{a,k} \quad \forall i \in N, \forall k \in K
+				\end{equation}
+
+				Maximum operation time constraint for each aerial robot:
+				\begin{equation}
+				a_i^k + t_{i,d_A}^{A} \cdot w_i^{a,k} \leq T_A^{\max} + M_A \cdot (1 - w_i^{a,k}) \quad \forall i \in N, \forall k \in K
+				\end{equation}
+
+				Minimum inspection time at each waypoint:
+				\begin{equation}
+				g_i^l \geq t_G^{\text{insp}} \cdot w_i^{g,l} \quad \forall i \in N, \forall l \in L
+				\end{equation}
+
+				Maximum operation time constraint for each ground robot:
+				\begin{equation}
+				g_i^l + t_{i,d_G}^{G} \cdot w_i^{g,l} \leq T_G^{\max} + M_G \cdot (1 - w_i^{g,l}) \quad \forall i \in N, \forall l \in L
+				\end{equation}
+
+			\subsubsection{Approximate Route Length Constraints}
+
+			Total estimated travel and inspection time for each aerial robot:
+
+			\begin{equation}
+			\sum_{i \in N} w_i^{a,k} \cdot \left( \frac{t_{d_A,i}^{A} + t_{i,d_A}^{A}}{2} \right) + \sum_{i \in N} w_i^{a,k} \cdot t_A^{\text{insp}} \leq T_A^{\max} + M_A \cdot (1 - \text{use}_k^a) \quad \forall k \in K
+			\end{equation}
+
+			Total estimated travel and inspection time for each ground robot:
+
+			\begin{equation}
+			\sum_{i \in N} w_i^{g,l} \cdot \left( \frac{t_{d_G,i}^{G} + t_{i,d_G}^{G}}{2} \right) + \sum_{i \in N} w_i^{g,l} \cdot t_G^{\text{insp}} \leq T_G^{\max} + M_G \cdot (1 - \text{use}_l^g) \quad \forall l \in L
+			\end{equation}
 
 
 	\section{Implementation}
