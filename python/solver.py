@@ -160,9 +160,8 @@ def solve_multi_robot_inspection_problem(
         # Simple constraint: total estimated travel time plus inspection time
         total_travel_time = pulp.lpSum(
             v_a[(i, k)] * (
-                aerial_travel_times[(aerial_depot_idx, i)] +  # From depot to waypoint
-                aerial_travel_times[(i, aerial_depot_idx)]    # From waypoint back to depot
-            ) / 2  # Average trip (this is a simplification) 
+                aerial_travel_times[(aerial_depot_idx, i)])  # From depot to waypoint
+        
             for i in N
         )
         total_inspection_time = pulp.lpSum(v_a[(i, k)] * aerial_inspection_time for i in N)
@@ -174,9 +173,7 @@ def solve_multi_robot_inspection_problem(
         # Simple constraint: total estimated travel time plus inspection time
         total_travel_time = pulp.lpSum(
             v_g[(i, l)] * (
-                ground_travel_times[(ground_depot_idx, i)] +  # From depot to waypoint
-                ground_travel_times[(i, ground_depot_idx)]    # From waypoint back to depot
-            ) / 2  # Average trip (this is a simplification)
+                ground_travel_times[(ground_depot_idx, i)]) # From depot to waypoint
             for i in N
         )
         total_inspection_time = pulp.lpSum(v_g[(i, l)] * ground_inspection_time for i in N)
