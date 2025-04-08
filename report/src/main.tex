@@ -31,7 +31,8 @@
 		This paper presents a mixed integer linear programming (MILP) approach to the problem of multi-robot waypoint inspection planning.
 		The following sections will describe the problem formulation, modeling, implementation, and discussion of the results.
 
-	\section{Problem Formulation}
+
+	\section{Problem Description}
 
 		For the modeling of the problem we consider two robot types, an aerial robot and a ground mobile robot. 
 		The number of robots of each type is specified as a parameter of the problem.
@@ -49,9 +50,22 @@
 
 		The units used are minutes for time and meters for distance.
 
-		In the next section we will describe the mathematical formulation of the problem.
+		In the next sections we will describe the mathematical formulation of the problem.
 
-	\section{Modeling}
+	
+
+	\section{Literature Review}
+
+		The formulation of the model problem resembles that of the multiple traveling salesman problem (mTSP) .
+		Previous works such as \cite{oberlin2009transformation} \cite{albert2017uav}, show how such an approach can be used for planning in multi-robot systems.
+
+		Typically in a Mixed Integer Linear Programming (MILP) formulation for a mTSP, one would introduce routing variables and constraints for subtour elimination \cite{bektas2006multiple}. 
+		However, the inclusion of route considerations can slow down the solving speed for the optimization problem and may not even be needed if one only cares about capabilities and cost rather than routing; in such cases various methods have been proposed to approximate travel distances in a problem \cite{NICOLA201967}.
+
+		In the case of our model, it was noted through visual plotting of random waypoints on a 2D plane that the length of the optimal route could roughly be approximated by the roundtrip distances from the depot to each waypoint. 
+		The following section describes this formulation and approximation in more detail.
+
+	\section{Mathematical Model}
 
 		\subsection{Definitions}
 
@@ -245,33 +259,54 @@
 
 			\subsubsection{Approximate Route Length Constraints}
 
-				Our problem formulation shares similarities to the Multiple Traveling Salesman Problem which typically requires routing variables and sub-tour elimination constraints. 
-				This approach was attempted by the author but was not satisfactorily implemented, thus a simplification was needed to ensure plans would be feasible and solved quickly (less than hour wallclock time). This is discussed more in the \ref{Discussion} section.
-
-				We wish to specify that the total mission time of either robot once it leaves the depot is less than or equal to the maximum allowable operation time of a given robot. 				
+				We wish to specify that the total mission time of either robot once it leaves the depot is less than or equal to the maximum allowable operation time of a given robot.
+				Since the exact routes for the robot travel is not known, we estimate expected route travel time to be the round trip distance from the depot point to any visited waypoint point. 
+				The inspection time for any visited waypoint is then added to this value.
+				The sum of these two values should then be less than or equal to the maximum operating time for that robot platform, where again we use big M value to make the constraint non-binding if a robot is not used.
 				
 
-
 				\begin{equation}
-					\sum_{i \in N} w_i^{a,k} \cdot \left( t_{d_A,i}^{A}\right) + \sum_{i \in N} w_i^{a,k} \cdot t_A^{\text{insp}} \leq T_A^{\max} + M_A \cdot (1 - \text{use}_k^a) \quad \forall k \in K
-				\end{equation}
-
-				Total estimated travel and inspection time for each ground robot:
-
-				\begin{equation}
-					\sum_{i \in N} w_i^{g,l} \cdot \left( t_{d_G,i}^{G}\right) + \sum_{i \in N} w_i^{g,l} \cdot t_G^{\text{insp}} \leq T_G^{\max} + M_G \cdot (1 - \text{use}_l^g) \quad \forall l \in L
+					\sum_{i \in N} w_i^{a,k} \cdot \left( 2 \cdot t_{d_A,i}^{A}\right) + \sum_{i \in N} w_i^{a,k} \cdot t_A^{\text{insp}} \leq T_A^{\max} + M_A \cdot (1 - \text{use}_k^a) \quad \forall k \in K
 				\end{equation}
 
 
-	\section{Implementation}
+				\begin{equation}
+					\sum_{i \in N} w_i^{g,l} \cdot \left( 2 \cdot t_{d_G,i}^{G}\right) + \sum_{i \in N} w_i^{g,l} \cdot t_G^{\text{insp}} \leq T_G^{\max} + M_G \cdot (1 - \text{use}_l^g) \quad \forall l \in L
+				\end{equation}
 
-	\section{Discussion}
+
+	\section{Solution Method}
+
+		A Python program is created to solve the MILP formulation. 
+		We use PuLP, a LP and MILP solving library in Python \cite{pulp}.
+		The code for the developed model can be found at \url{https://github.com/jc-cr/multirobot_inspection_optimizer}.
+
+		To showcase the models capabilities an interactive demo is created with the same repository. 
+		The demo creates a browser based GUI which allows for the user to input robot parameters, set waypoint locations, and then visualize the results.
+		An example of this can be seen in \figref{fig:demo}.
+
+		\begin{figure}[htbp]
+			\centering
+			\includegraphics[width=0.9\linewidth,height=0.9\textheight,keepaspectratio]{2025-04-08_05-10.pdf}
+			\caption{Developed browser based GUI showcasing a solved inspection plan.}
+			\label{fig:demo}
+		\end{figure}
+
+
+	\section{Numerical Results}
+
+
+
 
 	\section{Conclusion}
+
+	In this report a Mixed Integer Linear Program was developed to optimize the inspection coverage of a ground and aerial robot fleet. 
+	We formulated a model which maximized the number of waypoints covered by N robots with variable parameters and operating capabilities.
+	This formulation was then implemented in a Python program using the PuLP library of solvers and a browser based GUI was developed to allow for an interactive demonstration environment.
 
 	\newpage
 	\bibliographystyle{IEEEtran}
 	\nocite{*}
-	\bibliography{ref.bib}
+	\bibliography{/project/src/ref}
 
 \end{document}

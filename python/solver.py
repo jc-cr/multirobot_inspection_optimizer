@@ -2,6 +2,7 @@ import pulp
 import numpy as np
 
 
+
 def solve_multi_robot_inspection_problem(
         waypoints, 
         aerial_depot, 
@@ -150,16 +151,19 @@ def solve_multi_robot_inspection_problem(
                 # inspect_after[i,k,l] = 1 if aerial robot k inspects i and then ground robot l inspects i
                 model += inspect_after[(i, k, l)] <= v_a[(i, k)]
                 model += inspect_after[(i, k, l)] <= v_g[(i, l)]
-                model += inspect_after[(i, k, l)] >= v_a[(i, k)] + v_g[(i, l)] - 1
+                model += inspect_after[(i, k, l)] <= use_aerial[k]  # ADDED: ensure aerial robot k is used
+                model += inspect_after[(i, k, l)] <= use_ground[l]  # ADDED: ensure ground robot l is used
+                model += inspect_after[(i, k, l)] >= v_a[(i, k)] + v_g[(i, l)] + use_aerial[k] + use_ground[l] - 3  # UPDATED: correct lower bound
                 
                 # If ground robot l visits after aerial robot k, ensure proper timing
-                model += g_time[(i, l)] >= a_time[(i, k)] - M_G * (1 - inspect_after[(i, k, l)])
+                # UPDATED: Added the term to ensure constraint is only active when both robots are used
+                model += g_time[(i, l)] >= a_time[(i, k)] - M_G * (1 - inspect_after[(i, k, l)]) - M_G * (2 - use_aerial[k] - use_ground[l])
     
     # 9. Simple approximate route length constraints for aerial robots
     for k in K:
         # Simple constraint: total estimated travel time plus inspection time
         total_travel_time = pulp.lpSum(
-            v_a[(i, k)] * (
+            v_a[(i, k)] * (2*
                 aerial_travel_times[(aerial_depot_idx, i)])  # From depot to waypoint
         
             for i in N
@@ -172,7 +176,7 @@ def solve_multi_robot_inspection_problem(
     for l in L:
         # Simple constraint: total estimated travel time plus inspection time
         total_travel_time = pulp.lpSum(
-            v_g[(i, l)] * (
+            v_g[(i, l)] * (2*
                 ground_travel_times[(ground_depot_idx, i)]) # From depot to waypoint
             for i in N
         )
@@ -285,7 +289,7 @@ def solve_multi_robot_inspection_problem(
         solution["aerial_distances"][k] = aerial_distance
         
         # Calculate time (approximate)
-        aerial_time = aerial_distance / aerial_speed + len(aerial_route) * aerial_inspection_time
+        aerial_time = aerial_distance / aerial_speed + (len(aerial_route) - 2) * aerial_inspection_time  # Subtract 2 for depot visits
         solution["total_aerial_times"][k] = aerial_time
     
     for l in L:
@@ -301,7 +305,7 @@ def solve_multi_robot_inspection_problem(
         solution["ground_distances"][l] = ground_distance
         
         # Calculate time (approximate)
-        ground_time = ground_distance / ground_speed + len(ground_route) * ground_inspection_time
+        ground_time = ground_distance / ground_speed + (len(ground_route) - 2) * ground_inspection_time  # Subtract 2 for depot visits
         solution["total_ground_times"][l] = ground_time
     
     # Print summary
@@ -324,9 +328,10 @@ def solve_multi_robot_inspection_problem(
     
     return solution
 
+
 def run_example():
 
-    from solver_code.figures import visualize_multi_robot_solution
+    from figures import visualize_multi_robot_solution
 
     """Run an example using the simplified multi-robot inspection solver."""
     # Create waypoints
