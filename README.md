@@ -4,9 +4,31 @@ This project showcases a MILP solver for a ground and aerial robot fleet inspect
 
 ## Requirements
 
-Requires docker and docker compose to run.
+Docker and Docker compose recommended to run.
+Otherwise python requirements can be found [.docker/req.txt](.docker/req.txt)
 
-## Build
+## Python Only Instructions
+
+From project directory:
+
+### Install Requirements
+
+```bash
+pip install --no-cache-dir -r .docker/req.txt
+```
+
+
+### Run example
+
+```bash
+python3 python/solver.py
+```
+
+
+## Docker Instructions
+
+
+### Build Project
 
 From the project directory:
 
@@ -14,9 +36,6 @@ From the project directory:
 cd .docker
 docker compose build
 ```
-
-
-## Run
 
 ### Run Solver Example
 

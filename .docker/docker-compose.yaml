@@ -16,6 +16,10 @@ services:
   server:
     extends: solver
     command: bash -c "python3 server.py"
+
+  analysis:
+    extends: solver
+    command: bash -c "python3 analysis.py"
  
   latex:
       user: "${UID:-1000}:${GID:-1000}"

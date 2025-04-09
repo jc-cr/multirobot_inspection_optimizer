@@ -34,5 +34,6 @@
     "cSpell.words": [
         "greyscale",
         "Scientometric"
-    ]
+    ],
+    "python.REPL.enableREPLSmartSend": false
 }
