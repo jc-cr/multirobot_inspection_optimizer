@@ -14,7 +14,7 @@
 		This report
 	\end{abstract}
 
-	\section{Introduction}
+	\section{Introduction}\label{intro}
 
 		This work is motivated by a previous project the author has worked on involving a multi-robot approach to outdoor construction site inspection. 
 
@@ -32,7 +32,7 @@
 		The following sections will describe the problem formulation, modeling, implementation, and discussion of the results.
 
 
-	\section{Problem Description}
+	\section{Problem Description}\label{prob_desc}
 
 		For the modeling of the problem we consider two robot types, an aerial robot and a ground mobile robot. 
 		The number of robots of each type is specified as a parameter of the problem.
@@ -54,7 +54,7 @@
 
 	
 
-	\section{Literature Review}
+	\section{Literature Review}\label{lit_review}
 
 		The formulation of the model problem resembles that of the multiple traveling salesman problem (mTSP) .
 		Previous works such as \cite{oberlin2009transformation} \cite{albert2017uav}, show how such an approach can be used for planning in multi-robot systems.
@@ -65,7 +65,7 @@
 		In the case of our model, it was noted through visual plotting of random waypoints on a 2D plane that the length of the optimal route could roughly be approximated by the roundtrip distances from the depot to each waypoint. 
 		The following section describes this formulation and approximation in more detail.
 
-	\section{Mathematical Model}
+	\section{Mathematical Model}\label{math_model}
 
 		\subsection{Definitions}
 
@@ -275,7 +275,7 @@
 				\end{equation}
 
 
-	\section{Solution Method}
+	\section{Solution Method}\label{sol_methods}
 
 		A Python program is created to solve the MILP formulation. 
 		We use PuLP, a LP and MILP solving library in Python \cite{pulp}.
@@ -293,12 +293,12 @@
 		\end{figure}
 
 
-	\section{Numerical Results}
+	\section{Numerical Results}\label{numerical_results}
 
 
 
 
-	\section{Conclusion}
+	\section{Conclusion}\label{conclusion}
 
 	In this report a Mixed Integer Linear Program was developed to optimize the inspection coverage of a ground and aerial robot fleet. 
 	We formulated a model which maximized the number of waypoints covered by N robots with variable parameters and operating capabilities.
