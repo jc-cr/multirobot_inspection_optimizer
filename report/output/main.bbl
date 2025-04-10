@@ -21,13 +21,6 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
-\bibitem{pulp}
-\BIBentryALTinterwordspacing
-S.~Mitchell, M.~O'Sullivan, I.~Dunning, and J.~Roy, ``Pulp: A linear
-  programming toolkit for python,'' 2022, mIT License. [Online]. Available:
-  \url{https://github.com/coin-or/pulp}
-\BIBentrySTDinterwordspacing
-
 \bibitem{oberlin2009transformation}
 P.~Oberlin, S.~Rathinam, and S.~Darbha, ``A transformation for a heterogeneous,
   multi-depot, multiple traveling salesman problem,'' in \emph{Proceedings of
@@ -47,9 +40,16 @@ T.~Bektas, ``The multiple traveling salesman problem: an overview of
 \bibitem{NICOLA201967}
 \BIBentryALTinterwordspacing
 D.~Nicola, R.~Vetschera, and A.~Dragomir, ``Total distance approximations for
-  routing solutions,'' \emph{Computers & Operations Research}, vol. 102, pp.
+  routing solutions,'' \emph{Computers \& Operations Research}, vol. 102, pp.
   67--74, 2019. [Online]. Available:
   \url{https://www.sciencedirect.com/science/article/pii/S0305054818302673}
+\BIBentrySTDinterwordspacing
+
+\bibitem{pulp}
+\BIBentryALTinterwordspacing
+S.~Mitchell, M.~O'Sullivan, I.~Dunning, and J.~Roy, ``Pulp: A linear
+  programming toolkit for python,'' 2022, mIT License. [Online]. Available:
+  \url{https://github.com/coin-or/pulp}
 \BIBentrySTDinterwordspacing
 
 \bibitem{christofides1981exact}

@@ -7,9 +7,9 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
-Database file #1: src/ref.bib
+Database file #1: /project/src/ref.bib
 Warning--entry type for "pulp" isn't style-file defined
---line 1 of file src/ref.bib
+--line 1 of file /project/src/ref.bib
 -- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
@@ -17,7 +17,7 @@ Warning--entry type for "pulp" isn't style-file defined
 Done.
 You've used 8 entries,
             4087 wiz_defined-function locations,
-            884 strings with 8870 characters,
+            884 strings with 8876 characters,
 and the built_in function-call counts, 6857 in all, are:
 = -- 578
 > -- 141

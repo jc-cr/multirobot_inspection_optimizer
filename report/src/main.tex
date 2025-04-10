@@ -275,6 +275,39 @@
 				\end{equation}
 
 
+		\subsection{Complete Optimization Problem}
+
+		The complete mixed integer linear programming formulation can be written as follows:
+
+		{\small
+		\begin{align}
+		\text{Maximize} \quad & \sum_{i \in N}\sum_{l \in L} w_i^{g,l} \tag{1} \\
+		\text{subject to:} \quad & \notag \\
+		\text{Assignment:} \quad & \sum_{k \in K} w_i^{a,k} \leq 1 & \forall i \in N \tag{2} \\
+		& \sum_{l \in L} w_i^{g,l} \leq 1 & \forall i \in N \tag{3} \\
+		\text{Robot Usage:} \quad & \sum_{i \in N} w_i^{a,k} \geq \text{use}_k^a & \forall k \in K \tag{4} \\
+		& \sum_{i \in N} w_i^{a,k} \leq n \cdot \text{use}_k^a & \forall k \in K \tag{5} \\
+		& \sum_{i \in N} w_i^{g,l} \geq \text{use}_l^g & \forall l \in L \tag{6} \\
+		& \sum_{i \in N} w_i^{g,l} \leq n \cdot \text{use}_l^g & \forall l \in L \tag{7} \\
+		\text{Precedence:} \quad & w_i^{g,l} \leq \sum_{k \in K} w_i^{a,k} & \forall i \in N, \forall l \in L \tag{8} \\
+		& g_i^l \geq a_i^k - M_G \cdot (1 - z_i^{k,l}) - M_G \cdot (2 - \text{use}_k^a - \text{use}_l^g) & \forall i \in N, k \in K, l \in L \tag{9} \\
+		\text{Linking $z_i^{k,l}$:} \quad & z_i^{k,l} \leq w_i^{g,l} & \forall i \in N, k \in K, l \in L \tag{10} \\
+		& z_i^{k,l} \leq w_i^{a,k} & \forall i \in N, k \in K, l \in L \tag{11} \\
+		& z_i^{k,l} \leq \text{use}_k^a & \forall i \in N, k \in K, l \in L \tag{12} \\
+		& z_i^{k,l} \leq \text{use}_l^g & \forall i \in N, k \in K, l \in L \tag{13} \\
+		& z_i^{k,l} \geq w_i^{g,l} + w_i^{a,k} + \text{use}_k^a + \text{use}_l^g - 3 & \forall i \in N, k \in K, l \in L \tag{14} \\
+		\text{Time:} \quad & a_i^k \geq t_A^{\text{insp}} \cdot w_i^{a,k} & \forall i \in N, k \in K \tag{15} \\
+		& g_i^l \geq t_G^{\text{insp}} \cdot w_i^{g,l} & \forall i \in N, l \in L \tag{16} \\
+		& a_i^k + t_{i,d_A}^{A} \cdot w_i^{a,k} \leq T_A^{\max} + M_A \cdot (1 - w_i^{a,k}) & \forall i \in N, k \in K \tag{17} \\
+		& g_i^l + t_{i,d_G}^{G} \cdot w_i^{g,l} \leq T_G^{\max} + M_G \cdot (1 - w_i^{g,l}) & \forall i \in N, l \in L \tag{18} \\
+		\text{Route Length:} \quad & \sum_{i \in N} w_i^{a,k} \cdot \left( 2 \cdot t_{d_A,i}^{A}\right) + \sum_{i \in N} w_i^{a,k} \cdot t_A^{\text{insp}} \leq T_A^{\max} + M_A \cdot (1 - \text{use}_k^a) & \forall k \in K \tag{19} \\
+		& \sum_{i \in N} w_i^{g,l} \cdot \left( 2 \cdot t_{d_G,i}^{G}\right) + \sum_{i \in N} w_i^{g,l} \cdot t_G^{\text{insp}} \leq T_G^{\max} + M_G \cdot (1 - \text{use}_l^g) & \forall l \in L \tag{20} \\
+		\text{Domain:} \quad & w_i^{a,k}, w_i^{g,l}, \text{use}_k^a, \text{use}_l^g, z_i^{k,l} \in \{0,1\} & \forall i \in N, k \in K, l \in L \tag{21} \\
+		& a_i^k, g_i^l \geq 0 & \forall i \in N, k \in K, l \in L \tag{22}
+		\end{align}
+		}
+
+
 	\section{Solution Method}\label{sol_methods}
 
 		A Python program is created to solve the MILP formulation. 
@@ -287,7 +320,7 @@
 
 		\begin{figure}[htbp]
 			\centering
-			\includegraphics[width=0.9\linewidth,height=0.9\textheight,keepaspectratio]{2025-04-08_05-10.pdf}
+			\includegraphics[width=0.9\linewidth,height=0.9\textheight,keepaspectratio]{insp.pdf}
 			\caption{Developed browser based GUI showcasing a solved inspection plan.}
 			\label{fig:demo}
 		\end{figure}
