@@ -20,6 +20,10 @@ services:
   analysis:
     extends: solver
     command: bash -c "python3 analysis.py"
+
+  performance:
+    extends: solver
+    command: bash -c "python3 performance.py"
  
   latex:
       user: "${UID:-1000}:${GID:-1000}"

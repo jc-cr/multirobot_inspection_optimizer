@@ -1,0 +1,5 @@
+map_size,num_points,solve_time,status,objective_value,aerial_waypoints,ground_waypoints,aerial_robots_used,ground_robots_used,num_vars,num_constraints
+100,20,4.2149951457977295,optimal,20.0,20,20,3,3,,
+200,20,6.7216269969940186,optimal,19.0,19,19,3,3,,
+500,20,83.72661352157593,optimal,10.0,10,10,3,3,,
+1000,20,5.812314987182617,optimal,4.0,5,4,3,3,,
