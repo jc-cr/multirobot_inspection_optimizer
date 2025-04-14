@@ -4,3 +4,5 @@ matplotlib>=3.7.0
 quart 
 quart-cors
 pandas
+seaborn
+scipy

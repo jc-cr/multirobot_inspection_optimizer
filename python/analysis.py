@@ -1,543 +1,353 @@
-import pulp
-import numpy as np
-import pandas as pd
+# analysis.py
+"""
+Sensitivity analysis for multi-robot inspection problem using direct perturbation method
+"""
+
 from solver import solve_multi_robot_inspection_problem
 
-def perform_sensitivity_analysis(
-        waypoints, 
-        aerial_depot, 
-        ground_depot,
-        aerial_speed,
-        ground_speed,
-        aerial_max_time,
-        ground_max_time,
-        aerial_inspection_time, 
-        ground_inspection_time,
-        num_aerial_robots,
-        num_ground_robots,
-        parameters_to_analyze=None):
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+
+# Base parameters - adjusted for large map
+base_params = {
+    'aerial_speed': 50.0,       # Increased for large map (m/min)
+    'ground_speed': 20.0,       # Increased for large map (m/min)
+    'aerial_max_time': 60.0,    # Increased for large map (min)
+    'ground_max_time': 120.0,   # Increased for large map (min)
+    'aerial_inspection_time': 1.0,  # Same as before (min)
+    'ground_inspection_time': 3.0,  # Same as before (min)
+    'num_aerial_robots': 3,
+    'num_ground_robots': 3
+}
+
+def generate_large_scale_waypoints(map_size=1000, num_points=30):
     """
-    Perform sensitivity analysis on a multi-robot inspection MILP problem using a two-phase approach.
+    Generate waypoints for a large-scale map with points distributed in relation to the diagonal.
     
-    Parameters:
-    - All the standard parameters for the solve_multi_robot_inspection_problem function
-    - parameters_to_analyze: dict of parameters to analyze with their ranges, e.g.,
-      {'aerial_speed': [3.0, 4.0, 5.0, 6.0, 7.0], 'ground_speed': [1.0, 1.5, 2.0, 2.5, 3.0]}
-      
+    Args:
+        map_size: Size of the map (square, map_size x map_size)
+        num_points: Approximate number of waypoints to generate
+        
     Returns:
-    - Dictionary containing sensitivity analysis results
+        waypoints: List of waypoint coordinates
+        aerial_depot: Coordinates of aerial depot
+        ground_depot: Coordinates of ground depot
     """
-    # Step 1: Solve the original MILP problem
-    print("Solving original MILP problem...")
-    base_solution = solve_multi_robot_inspection_problem(
-        waypoints, aerial_depot, ground_depot,
-        aerial_speed, ground_speed,
-        aerial_max_time, ground_max_time,
-        aerial_inspection_time, ground_inspection_time,
-        num_aerial_robots, num_ground_robots
-    )
+    # Place depots on opposite sides of the diagonal
+    aerial_depot = (0, 0)  # Bottom left
+    ground_depot = (map_size, map_size)  # Top right
     
-    if base_solution["status"] != "optimal":
-        return {"error": "Original problem could not be solved optimally"}
+    # Number of points in each region (left of diagonal, on diagonal, right of diagonal)
+    points_per_region = num_points // 3
     
-    # Step 2: Extract the optimal integer variable values
-    n = len(waypoints)
-    k_max = num_aerial_robots
-    l_max = num_ground_robots
+    # Generate points along the diagonal
+    diagonal_points = []
+    for i in range(points_per_region):
+        # Evenly space points along diagonal
+        t = (i + 1) / (points_per_region + 1)
+        x = t * map_size
+        y = t * map_size
+        diagonal_points.append((x, y))
     
-    # Create mappings for integer variables (aerial and ground robot assignments)
-    aerial_assignments = {}
-    for k in range(k_max):
-        for i in range(n):
-            if base_solution["aerial_visited"][k].get(i, 0) > 0.5:
-                aerial_assignments[(i, k)] = 1
-            else:
-                aerial_assignments[(i, k)] = 0
+    # Generate points to the left of diagonal
+    left_points = []
+    for i in range(points_per_region):
+        # Create points at increasing distances from diagonal
+        t = (i + 1) / (points_per_region + 1)
+        x = t * map_size
+        # Shift down from the diagonal by varying amounts
+        y = t * map_size - (t * 300)  # Larger offset for points further along diagonal
+        if y < 0:
+            y = 50  # Ensure point is within map
+        left_points.append((x, y))
     
-    ground_assignments = {}
-    for l in range(l_max):
-        for i in range(n):
-            if base_solution["ground_visited"][l].get(i, 0) > 0.5:
-                ground_assignments[(i, l)] = 1
-            else:
-                ground_assignments[(i, l)] = 0
+    # Generate points to the right of diagonal
+    right_points = []
+    for i in range(points_per_region):
+        # Create points at increasing distances from diagonal
+        t = (i + 1) / (points_per_region + 1)
+        # Shift left from the diagonal by varying amounts
+        x = t * map_size - (t * 300)  # Larger offset for points further along diagonal
+        if x < 0:
+            x = 50  # Ensure point is within map
+        y = t * map_size
+        right_points.append((x, y))
     
-    # Step 3: Create a new LP model with integer variables fixed
-    def create_lp_with_fixed_integers():
-        """Create and solve LP model with integer variables fixed at optimal values"""
-        # Number of waypoints and robots
-        aerial_depot_idx = -1
-        ground_depot_idx = -2
-        
-        # Calculate distances
-        distances = {}
-        
-        # Calculate waypoint-to-waypoint distances
-        for i in range(n):
-            for j in range(n):
-                if i != j:
-                    dist = np.sqrt((waypoints[i][0] - waypoints[j][0])**2 + 
-                                  (waypoints[i][1] - waypoints[j][1])**2)
-                    distances[(i, j)] = dist
-        
-        # Calculate depot-to-waypoint distances
-        for i in range(n):
-            distances[(aerial_depot_idx, i)] = np.sqrt((aerial_depot[0] - waypoints[i][0])**2 + 
-                                                     (aerial_depot[1] - waypoints[i][1])**2)
-            distances[(i, aerial_depot_idx)] = distances[(aerial_depot_idx, i)]
-            
-            distances[(ground_depot_idx, i)] = np.sqrt((ground_depot[0] - waypoints[i][0])**2 + 
-                                                     (ground_depot[1] - waypoints[i][1])**2)
-            distances[(i, ground_depot_idx)] = distances[(ground_depot_idx, i)]
-        
-        # Calculate travel times based on distances and speeds
-        aerial_travel_times = {k_v: v / aerial_speed for k_v, v in distances.items()}
-        ground_travel_times = {k_v: v / ground_speed for k_v, v in distances.items()}
-        
-        # Create the LP model (relaxed version of the MILP)
-        model = pulp.LpProblem("MultiRobotInspection_LP", pulp.LpMaximize)
-        
-        # Calculate appropriate Big-M values
-        max_aerial_travel = max(aerial_travel_times.values())
-        M_A = aerial_max_time + max_aerial_travel + aerial_inspection_time
-        
-        max_ground_travel = max(ground_travel_times.values())
-        M_G = ground_max_time + max_ground_travel + ground_inspection_time
-        
-        # Sets for indexing
-        N = range(n)  # Waypoints
-        K = range(k_max)  # Aerial robots
-        L = range(l_max)  # Ground robots
-        
-        # Decision Variables - but we'll fix the binary ones
-        # Time when aerial robot k completes inspection at waypoint i
-        a_time = {(i, k): pulp.LpVariable(f"a_time_{i}_{k}", lowBound=0) 
-                  for i in N for k in K if aerial_assignments.get((i, k), 0) > 0.5}
-        
-        # Time when ground robot l completes inspection at waypoint i
-        g_time = {(i, l): pulp.LpVariable(f"g_time_{i}_{l}", lowBound=0) 
-                  for i in N for l in L if ground_assignments.get((i, l), 0) > 0.5}
-        
-        # Binary variables to indicate if a robot is used - fixed to their values
-        use_aerial = {k: aerial_assignments.get((i, k), 0) > 0.5 for k in K for i in N}
-        use_aerial = {k: 1 if any(use_aerial[k] for i in N) else 0 for k in K}
-        
-        use_ground = {l: ground_assignments.get((i, l), 0) > 0.5 for l in L for i in N}
-        use_ground = {l: 1 if any(use_ground[l] for i in N) else 0 for l in L}
-        
-        # Objective: Maximize the number of waypoints visited by ground robots
-        # This is now fixed since we've fixed the binary variables, but we include it for sensitivity analysis
-        model += pulp.lpSum(ground_assignments.get((i, l), 0) for i in N for l in L)
-        
-        # Constraints - we only include constraints relevant to continuous variables
-        # Time constraints for aerial robots
-        for k in K:
-            if use_aerial[k] > 0.5:
-                for i in N:
-                    if aerial_assignments.get((i, k), 0) > 0.5:
-                        # If robot k visits waypoint i, it must spend at least inspection time there
-                        model += a_time[(i, k)] >= aerial_inspection_time
-                        
-                        # Total time must be within max operation time
-                        model += a_time[(i, k)] + aerial_travel_times[(i, aerial_depot_idx)] <= aerial_max_time
-        
-        # Time constraints for ground robots
-        for l in L:
-            if use_ground[l] > 0.5:
-                for i in N:
-                    if ground_assignments.get((i, l), 0) > 0.5:
-                        # If robot l visits waypoint i, it must spend at least inspection time there
-                        model += g_time[(i, l)] >= ground_inspection_time
-                        
-                        # Total time must be within max operation time
-                        model += g_time[(i, l)] + ground_travel_times[(i, ground_depot_idx)] <= ground_max_time
-        
-        # Precedence constraints: ground robot can only inspect after aerial robot has inspected
-        for i in N:
-            for k in K:
-                for l in L:
-                    if (aerial_assignments.get((i, k), 0) > 0.5 and 
-                        ground_assignments.get((i, l), 0) > 0.5 and
-                        use_aerial[k] > 0.5 and
-                        use_ground[l] > 0.5):
-                        # Ground robot visits after aerial robot inspection
-                        model += g_time[(i, l)] >= a_time[(i, k)]
-        
-        # Approximate route length constraints for aerial robots
-        for k in K:
-            if use_aerial[k] > 0.5:
-                visited_waypoints = [i for i in N if aerial_assignments.get((i, k), 0) > 0.5]
-                if visited_waypoints:
-                    # Route constraint
-                    total_travel_time = sum(2 * aerial_travel_times[(aerial_depot_idx, i)] for i in visited_waypoints)
-                    total_inspection_time = sum(aerial_inspection_time for i in visited_waypoints)
-                    
-                    # Track total time constraint
-                    model += pulp.lpSum(a_time[(i, k)] for i in visited_waypoints) + total_travel_time <= aerial_max_time
-        
-        # Approximate route length constraints for ground robots
-        for l in L:
-            if use_ground[l] > 0.5:
-                visited_waypoints = [i for i in N if ground_assignments.get((i, l), 0) > 0.5]
-                if visited_waypoints:
-                    # Route constraint
-                    total_travel_time = sum(2 * ground_travel_times[(ground_depot_idx, i)] for i in visited_waypoints)
-                    total_inspection_time = sum(ground_inspection_time for i in visited_waypoints)
-                    
-                    # Track total time constraint
-                    model += pulp.lpSum(g_time[(i, l)] for i in visited_waypoints) + total_travel_time <= ground_max_time
-        
-        # Solve the LP model
-        print("Solving the LP relaxation with fixed integer variables...")
-        solver = pulp.PULP_CBC_CMD(msg=True)
-        model.solve(solver)
-        
-        # Extract sensitivity information
-        sensitivity_info = {
-            "status": pulp.LpStatus[model.status],
-            "objective_value": pulp.value(model.objective),
-            "constraints": {},
-            "variables": {}
-        }
-        
-        # Get shadow prices and slack values for constraints
-        for name, constraint in model.constraints.items():
-            sensitivity_info["constraints"][name] = {
-                "shadow_price": constraint.pi,
-                "slack": constraint.slack
-            }
-        
-        # Get reduced costs for variables
-        for var in model.variables():
-            sensitivity_info["variables"][var.name] = {
-                "value": var.value(),
-                "reduced_cost": var.dj
-            }
-        
-        return sensitivity_info, model
+    # Combine all points
+    waypoints = diagonal_points + left_points + right_points
     
-    # Perform base LP analysis
-    lp_sensitivity, lp_model = create_lp_with_fixed_integers()
+    return waypoints, aerial_depot, ground_depot
+
+
+def sensitivity_analysis():
+    """
+    Perform sensitivity analysis on a much larger map (1000x1000m) to better stress test parameters.
+    """
     
-    # Step 4: Perform sensitivity analysis on parameters of interest
-    sensitivity_results = {
-        "base_solution": base_solution,
-        "lp_sensitivity": lp_sensitivity,
-        "parameter_analysis": {}
+
+    
+    # Generate large-scale waypoints (1000x1000 map)
+    map_size = 1000
+    waypoints, aerial_depot, ground_depot = generate_large_scale_waypoints(map_size=map_size, num_points=30)
+    
+    
+    # Parameters to vary and their ranges (scaled for large map)
+    param_ranges = {
+        'aerial_speed': [25.0, 50.0, 75.0, 100.0],
+        'ground_speed': [10.0, 20.0, 30.0, 40.0],
+        'aerial_max_time': [30.0, 60.0, 90.0, 120.0],
+        'ground_max_time': [60.0, 120.0, 180.0, 240.0],
+        'aerial_inspection_time': [0.5, 1.0, 1.5, 2.0],
+        'ground_inspection_time': [1.5, 3.0, 4.5, 6.0],
+        'num_aerial_robots': [1, 3, 5, 7],
+        'num_ground_robots': [1, 3, 5, 7]
     }
     
-    # If specific parameters are provided for analysis
-    if parameters_to_analyze:
-        for param_name, param_values in parameters_to_analyze.items():
-            print(f"Analyzing sensitivity to {param_name}...")
-            param_results = []
-            
-            # Store original parameter value
-            original_value = locals()[param_name]
-            
-            for param_value in param_values:
-                # Create parameter set with this value
-                current_params = {
-                    "aerial_speed": aerial_speed,
-                    "ground_speed": ground_speed,
-                    "aerial_max_time": aerial_max_time,
-                    "ground_max_time": ground_max_time,
-                    "aerial_inspection_time": aerial_inspection_time,
-                    "ground_inspection_time": ground_inspection_time,
-                    "num_aerial_robots": num_aerial_robots,
-                    "num_ground_robots": num_ground_robots
-                }
-                
-                # Update the specific parameter
-                current_params[param_name] = param_value
-                
-                # Solve with updated parameters
-                modified_solution = solve_multi_robot_inspection_problem(
-                    waypoints, aerial_depot, ground_depot,
-                    current_params["aerial_speed"], 
-                    current_params["ground_speed"],
-                    current_params["aerial_max_time"], 
-                    current_params["ground_max_time"],
-                    current_params["aerial_inspection_time"], 
-                    current_params["ground_inspection_time"],
-                    current_params["num_aerial_robots"], 
-                    current_params["num_ground_robots"]
-                )
-                
-                # Record results
-                param_results.append({
-                    "param_value": param_value,
-                    "objective_value": modified_solution.get("objective_value", None),
-                    "status": modified_solution.get("status", None),
-                    "solution_structure_changed": is_solution_structure_changed(base_solution, modified_solution)
-                })
-            
-            # Restore original parameter value
-            locals()[param_name] = original_value
-            
-            # Store analysis results
-            sensitivity_results["parameter_analysis"][param_name] = param_results
-            
-            # Find allowable range where solution structure remains the same
-            allowable_range = find_allowable_range(param_results, original_value)
-            sensitivity_results["allowable_ranges"] = sensitivity_results.get("allowable_ranges", {})
-            sensitivity_results["allowable_ranges"][param_name] = allowable_range
-    
-    return sensitivity_results
-
-def is_solution_structure_changed(base_solution, new_solution):
-    """Check if the solution structure has changed (different assignment of waypoints to robots)"""
-    if base_solution.get("status") != new_solution.get("status"):
-        return True
-    
-    # Check if the same waypoints are visited by the same robots
-    for k in base_solution["aerial_visited"]:
-        if k not in new_solution["aerial_visited"]:
-            return True
-        for i in base_solution["aerial_visited"][k]:
-            if (base_solution["aerial_visited"][k].get(i, 0) > 0.5) != (new_solution["aerial_visited"][k].get(i, 0) > 0.5):
-                return True
-    
-    for l in base_solution["ground_visited"]:
-        if l not in new_solution["ground_visited"]:
-            return True
-        for i in base_solution["ground_visited"][l]:
-            if (base_solution["ground_visited"][l].get(i, 0) > 0.5) != (new_solution["ground_visited"][l].get(i, 0) > 0.5):
-                return True
-    
-    return False
-
-def find_allowable_range(param_results, original_value):
-    """Find the range of parameter values where solution structure remains the same"""
-    # Sort by parameter value
-    sorted_results = sorted(param_results, key=lambda x: x["param_value"])
-    
-    # Find range where solution structure is unchanged
-    lower_bound = None
-    upper_bound = None
-    
-    # Find the original value in the results
-    original_idx = None
-    for i, result in enumerate(sorted_results):
-        if abs(result["param_value"] - original_value) < 1e-6:
-            original_idx = i
-            break
-    
-    if original_idx is None:
-        return {"lower_bound": None, "upper_bound": None, "error": "Original value not found in results"}
-    
-    # Look for lower bound
-    for i in range(original_idx, -1, -1):
-        if sorted_results[i]["solution_structure_changed"]:
-            lower_bound = sorted_results[i+1]["param_value"] if i+1 < len(sorted_results) else None
-            break
-        if i == 0:
-            lower_bound = sorted_results[0]["param_value"]
-    
-    # Look for upper bound
-    for i in range(original_idx, len(sorted_results)):
-        if sorted_results[i]["solution_structure_changed"]:
-            upper_bound = sorted_results[i-1]["param_value"] if i > 0 else None
-            break
-        if i == len(sorted_results) - 1:
-            upper_bound = sorted_results[-1]["param_value"]
-    
-    return {"lower_bound": lower_bound, "upper_bound": upper_bound}
-
-def analyze_multiple_parameters_simultaneously(
-        waypoints, 
-        aerial_depot, 
-        ground_depot,
-        base_params,
-        param_combinations):
-    """
-    Analyze the effect of varying multiple parameters simultaneously.
-    
-    Parameters:
-    - waypoints, aerial_depot, ground_depot: Problem geometry
-    - base_params: Dictionary with base parameter values
-    - param_combinations: List of dictionaries, each with parameter combinations to test
-    
-    Returns:
-    - DataFrame with results of all combinations
-    """
+    # Results storage
     results = []
     
-    for combo in param_combinations:
-        # Create a copy of base parameters and update with this combination
-        params = base_params.copy()
-        params.update(combo)
-        
-        # Solve the MILP with these parameters
-        solution = solve_multi_robot_inspection_problem(
-            waypoints, aerial_depot, ground_depot,
-            params["aerial_speed"], params["ground_speed"],
-            params["aerial_max_time"], params["ground_max_time"],
-            params["aerial_inspection_time"], params["ground_inspection_time"],
-            params["num_aerial_robots"], params["num_ground_robots"]
-        )
-        
-        # Record results
-        result = combo.copy()
-        result["objective_value"] = solution.get("objective_value", None)
-        result["status"] = solution.get("status", None)
-        
-        # Calculate utilization metrics
-        aerial_robots_used = sum(1 for k in range(params["num_aerial_robots"]) 
-                               if k in solution["aerial_visited"] and sum(solution["aerial_visited"][k].values()) > 0)
-        ground_robots_used = sum(1 for l in range(params["num_ground_robots"]) 
-                               if l in solution["ground_visited"] and sum(solution["ground_visited"][l].values()) > 0)
-        
-        result["aerial_robots_used"] = aerial_robots_used
-        result["ground_robots_used"] = ground_robots_used
-        result["aerial_utilization"] = aerial_robots_used / params["num_aerial_robots"] * 100 if params["num_aerial_robots"] > 0 else 0
-        result["ground_utilization"] = ground_robots_used / params["num_ground_robots"] * 100 if params["num_ground_robots"] > 0 else 0
-        
-        results.append(result)
+    # Perform one-at-a-time sensitivity analysis
+    for param_name, param_values in param_ranges.items():
+        for value in param_values:
+            # Skip base case to avoid duplicates
+            if value == base_params[param_name]:
+                continue
+                
+            # Create modified params
+            current_params = base_params.copy()
+            current_params[param_name] = value
+            
+            # Run the model with modified params
+            print(f"Running with {param_name} = {value}...")
+            solution = solve_multi_robot_inspection_problem(
+                waypoints, aerial_depot, ground_depot,
+                current_params['aerial_speed'], 
+                current_params['ground_speed'],
+                current_params['aerial_max_time'], 
+                current_params['ground_max_time'],
+                current_params['aerial_inspection_time'], 
+                current_params['ground_inspection_time'],
+                current_params['num_aerial_robots'], 
+                current_params['num_ground_robots']
+            )
+            
+            # Extract metrics of interest
+            if solution["status"] == "optimal":
+                metrics = {
+                    'param_name': param_name,
+                    'param_value': value,
+                    'objective_value': solution['objective_value'],
+                    'aerial_waypoints': sum(sum(robot.values()) for robot in solution['aerial_visited'].values()),
+                    'ground_waypoints': sum(sum(robot.values()) for robot in solution['ground_visited'].values()),
+                    'aerial_robots_used': sum(1 for k, visited in solution['aerial_visited'].items() 
+                                           if sum(visited.values()) > 0),
+                    'ground_robots_used': sum(1 for l, visited in solution['ground_visited'].items() 
+                                           if sum(visited.values()) > 0),
+                    'max_aerial_time': max([solution['total_aerial_times'][k] 
+                                          for k in solution['total_aerial_times']] or [0]),
+                    'max_ground_time': max([solution['total_ground_times'][l] 
+                                          for l in solution['total_ground_times']] or [0])
+                }
+                results.append(metrics)
+            else:
+                print(f"No feasible solution for {param_name} = {value}")
     
-    return pd.DataFrame(results)
+    # Run base case
+    print("Running base case...")
+    base_solution = solve_multi_robot_inspection_problem(
+        waypoints, aerial_depot, ground_depot,
+        base_params['aerial_speed'], 
+        base_params['ground_speed'],
+        base_params['aerial_max_time'], 
+        base_params['ground_max_time'],
+        base_params['aerial_inspection_time'], 
+        base_params['ground_inspection_time'],
+        base_params['num_aerial_robots'], 
+        base_params['num_ground_robots']
+    )
+    
+    if base_solution["status"] == "optimal":
+        base_metrics = {
+            'param_name': 'base_case',
+            'param_value': 'base',
+            'objective_value': base_solution['objective_value'],
+            'aerial_waypoints': sum(sum(robot.values()) for robot in base_solution['aerial_visited'].values()),
+            'ground_waypoints': sum(sum(robot.values()) for robot in base_solution['ground_visited'].values()),
+            'aerial_robots_used': sum(1 for k, visited in base_solution['aerial_visited'].items() 
+                                   if sum(visited.values()) > 0),
+            'ground_robots_used': sum(1 for l, visited in base_solution['ground_visited'].items() 
+                                   if sum(visited.values()) > 0),
+            'max_aerial_time': max([base_solution['total_aerial_times'][k] 
+                                  for k in base_solution['total_aerial_times']] or [0]),
+            'max_ground_time': max([base_solution['total_ground_times'][l] 
+                                  for l in base_solution['total_ground_times']] or [0])
+        }
+        results.append(base_metrics)
+    
+    
+    return results
 
-def visualize_sensitivity_results(sensitivity_results, output_file=None):
+
+def visualize_sensitivity_analysis(results, output_dir="analysis_results"):
     """
     Visualize sensitivity analysis results.
-    
-    Parameters:
-    - sensitivity_results: Output from perform_sensitivity_analysis
-    - output_file: If provided, save the figures to this file
-    
-    Returns:
-    - None (displays or saves figures)
     """
-    import matplotlib.pyplot as plt
-    
-    # Create figure
-    plt.figure(figsize=(15, 10))
-    
-    # Plot parameter analysis results
-    subplot_count = len(sensitivity_results["parameter_analysis"])
-    if subplot_count == 0:
-        print("No parameter analysis results to visualize")
+    # Create output directory if it doesn't exist
+    if output_dir == None:
         return
-    
-    # Calculate rows and columns for subplots
-    cols = min(3, subplot_count)
-    rows = (subplot_count + cols - 1) // cols
-    
-    for i, (param_name, param_results) in enumerate(sensitivity_results["parameter_analysis"].items()):
-        plt.subplot(rows, cols, i + 1)
-        
-        # Extract data for plotting
-        param_values = [r["param_value"] for r in param_results]
-        obj_values = [r["objective_value"] for r in param_results]
-        structure_changed = [r["solution_structure_changed"] for r in param_results]
-        
-        # Plot objective values
-        plt.plot(param_values, obj_values, 'b-o', label='Objective Value')
-        
-        # Highlight points where solution structure changes
-        changed_x = [param_values[i] for i in range(len(param_values)) if structure_changed[i]]
-        changed_y = [obj_values[i] for i in range(len(obj_values)) if structure_changed[i]]
-        if changed_x:
-            plt.scatter(changed_x, changed_y, color='red', s=100, label='Structure Changed')
-        
-        # If allowable ranges are available, mark them
-        if "allowable_ranges" in sensitivity_results and param_name in sensitivity_results["allowable_ranges"]:
-            range_info = sensitivity_results["allowable_ranges"][param_name]
-            lower = range_info.get("lower_bound")
-            upper = range_info.get("upper_bound")
-            
-            if lower is not None and upper is not None:
-                plt.axvline(x=lower, color='g', linestyle='--', label='Allowable Range')
-                plt.axvline(x=upper, color='g', linestyle='--')
-                plt.axvspan(lower, upper, alpha=0.2, color='green')
-        
-        plt.title(f'Sensitivity to {param_name}')
-        plt.xlabel(param_name)
-        plt.ylabel('Objective Value')
-        plt.grid(True, alpha=0.3)
-        plt.legend()
-    
-    plt.tight_layout()
-    
-    if output_file:
-        plt.savefig(output_file, dpi=300)
-    else:
-        plt.show()
 
-# Example usage
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Convert results to DataFrame
+    df = pd.DataFrame(results)
+    
+    # Get base case values
+    base_case = df[df['param_name'] == 'base_case'].iloc[0]
+    base_obj = base_case['objective_value']
+    
+    # Calculate percentage change from base case
+    df['obj_pct_change'] = (df['objective_value'] - base_obj) / base_obj * 100
+    
+    # Create parameter-specific DataFrames for plotting
+    param_dfs = {}
+
+    
+    for param in df['param_name'].unique():
+        if param != 'base_case':
+            param_dfs[param] = df[df['param_name'] == param].copy()
+            
+            # Add base case for reference
+            base_row = df[df['param_name'] == 'base_case'].copy()
+            base_row['param_value'] = base_params[param]  # Fixed: Use base_params instead
+            param_dfs[param] = pd.concat([param_dfs[param], base_row])
+            
+            # Sort by parameter value
+            try:
+                param_dfs[param]['param_value'] = pd.to_numeric(param_dfs[param]['param_value'])
+                param_dfs[param] = param_dfs[param].sort_values('param_value')
+            except:
+                pass
+    
+    # Create tornado chart for overall sensitivity
+    plt.figure(figsize=(10, 8))
+    
+    # Get max absolute percentage change for each parameter
+    sensitivity = {}
+    for param, param_df in param_dfs.items():
+        param_df_no_base = param_df[param_df['param_name'] != 'base_case']
+        if not param_df_no_base.empty:
+            sensitivity[param] = param_df_no_base['obj_pct_change'].abs().max()
+    
+    # Create tornado chart
+    param_labels = list(sensitivity.keys())
+    param_values = list(sensitivity.values())
+    
+    # Sort by sensitivity
+    sorted_indices = np.argsort(param_values)[::-1]  # Reverse to get descending order
+    sorted_params = [param_labels[i] for i in sorted_indices]
+    sorted_values = [param_values[i] for i in sorted_indices]
+    
+    plt.barh(sorted_params, sorted_values)
+    plt.xlabel('Maximum % Change in Objective Value')
+    plt.title('Parameter Sensitivity - Tornado Chart')
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/tornado_chart.png')
+    
+    # Create detailed parameter plots
+    for param, param_df in param_dfs.items():
+        plt.figure(figsize=(10, 6))
+        
+        # Filter out base case for plotting
+        param_df_no_base = param_df[param_df['param_name'] != 'base_case']
+        plt.plot(param_df_no_base['param_value'], param_df_no_base['objective_value'], 'o-', label='Objective Value')
+        
+        # Add vertical line for base value
+        base_value = base_params[param]
+        plt.axvline(x=base_value, color='r', linestyle='--', label=f'Base Value: {base_value}')
+        
+        plt.xlabel(f'{param}')
+        plt.ylabel('Objective Value')
+        plt.title(f'Sensitivity to {param}')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.savefig(f'{output_dir}/sensitivity_{param}.png')
+    
+    # Create correlation heatmap for all metrics
+    try:
+        import seaborn as sns
+        plt.figure(figsize=(12, 10))
+        # Remove categorical columns and filter out base case
+        numeric_df = df[df['param_name'] != 'base_case'].select_dtypes(include=['number'])
+        corr = numeric_df.corr()
+        sns.heatmap(corr, annot=True, cmap='coolwarm', vmin=-1, vmax=1)
+        plt.title('Correlation Between Metrics')
+        plt.tight_layout()
+        plt.savefig(f'{output_dir}/correlation_heatmap.png')
+    except ImportError:
+        print("Seaborn not available, skipping correlation heatmap")
+    
+    # Create elasticity table
+    elasticity = {}
+    for param, param_df in param_dfs.items():
+        if param == 'base_case':
+            continue
+            
+        # Get base values
+        base_param_value = base_params[param]
+        base_obj_value = base_obj
+        
+        # Calculate elasticity for each point
+        param_elasticity = []
+        for _, row in param_df[param_df['param_name'] == param].iterrows():
+            param_value = float(row['param_value'])
+            obj_value = float(row['objective_value'])
+            
+            # Skip base case
+            if param_value == base_param_value:
+                continue
+                
+            # Calculate percentage changes
+            param_pct_change = (param_value - base_param_value) / base_param_value
+            obj_pct_change = (obj_value - base_obj_value) / base_obj_value
+            
+            # Calculate elasticity
+            if abs(param_pct_change) > 1e-6:
+                elasticity_value = obj_pct_change / param_pct_change
+                param_elasticity.append((param_value, elasticity_value))
+        
+        elasticity[param] = param_elasticity
+    
+    # Create elasticity table
+    elasticity_data = []
+    for param, values in elasticity.items():
+        for param_value, elasticity_value in values:
+            elasticity_data.append({
+                'Parameter': param,
+                'Parameter Value': param_value,
+                'Elasticity': elasticity_value,
+                '% Change from Base': (param_value - base_params[param]) / base_params[param] * 100
+            })
+    
+    elasticity_df = pd.DataFrame(elasticity_data)
+    print("Elasticity Table:")
+    print(elasticity_df)
+    
+    # Save elasticity data
+    elasticity_df.to_csv(f'{output_dir}/elasticity.csv', index=False)
+    
+    return {
+        'tornado_chart': 'tornado_chart.png',
+        'parameter_plots': [f'sensitivity_{param}.png' for param in param_dfs.keys()],
+        'correlation_heatmap': 'correlation_heatmap.png',
+        'elasticity_table': elasticity_df
+    }
+
+
+
+
 if __name__ == "__main__":
-    # Create example data
-    waypoints = [(1, 5), (3, 3), (5, 5), (7, 3), (9, 5), (5, 7), (2, 8), (8, 8), (3, 1), (7, 1)]
-    aerial_depot = (0, 0)
-    ground_depot = (10, 0)
-    
-    # Base parameters
-    base_params = {
-        "aerial_speed": 5.0,
-        "ground_speed": 2.0,
-        "aerial_max_time": 30.0,
-        "ground_max_time": 60.0,
-        "aerial_inspection_time": 1.0,
-        "ground_inspection_time": 3.0,
-        "num_aerial_robots": 2,
-        "num_ground_robots": 2
-    }
-    
-    # Parameters to analyze
-    parameters_to_analyze = {
-        "aerial_speed": [3.0, 4.0, 5.0, 6.0, 7.0],
-        "ground_speed": [1.0, 1.5, 2.0, 2.5, 3.0],
-        "aerial_max_time": [20.0, 25.0, 30.0, 35.0, 40.0],
-        "ground_max_time": [40.0, 50.0, 60.0, 70.0, 80.0],
-        "num_aerial_robots": [1, 2, 3, 4, 5],
-        "num_ground_robots": [1, 2, 3, 4, 5]
-    }
-    
-    # Perform sensitivity analysis
-    sensitivity_results = perform_sensitivity_analysis(
-        waypoints, aerial_depot, ground_depot,
-        base_params["aerial_speed"], base_params["ground_speed"],
-        base_params["aerial_max_time"], base_params["ground_max_time"],
-        base_params["aerial_inspection_time"], base_params["ground_inspection_time"],
-        base_params["num_aerial_robots"], base_params["num_ground_robots"],
-        parameters_to_analyze
-    )
-    
-    # Visualize results
-    visualize_sensitivity_results(sensitivity_results, "analysis_results/sensitivity_analysis_results.png")
-    
-    # Use the same parameters from the single-parameter analysis
-    # but create reasonable combinations to test together
-    param_combinations = [
-        # Test robot count combinations (keeping other parameters at baseline)
-        {"num_aerial_robots": 1, "num_ground_robots": 1},
-        {"num_aerial_robots": 1, "num_ground_robots": 3},
-        {"num_aerial_robots": 3, "num_ground_robots": 1},
-        {"num_aerial_robots": 3, "num_ground_robots": 3},
-        
-        # Test speed combinations
-        {"aerial_speed": 3.0, "ground_speed": 1.0},
-        {"aerial_speed": 3.0, "ground_speed": 3.0},
-        {"aerial_speed": 7.0, "ground_speed": 1.0},
-        {"aerial_speed": 7.0, "ground_speed": 3.0},
-        
-        # Test time combinations
-        {"aerial_max_time": 20.0, "ground_max_time": 40.0},
-        {"aerial_max_time": 20.0, "ground_max_time": 80.0},
-        {"aerial_max_time": 40.0, "ground_max_time": 40.0},
-        {"aerial_max_time": 40.0, "ground_max_time": 80.0},
-        
-        # Test mixed critical parameter combinations
-        {"aerial_speed": 3.0, "num_aerial_robots": 1},
-        {"aerial_speed": 7.0, "num_aerial_robots": 3},
-        {"ground_speed": 1.0, "num_ground_robots": 1},
-        {"ground_speed": 3.0, "num_ground_robots": 3}
-    ]
-        
-    multi_param_results = analyze_multiple_parameters_simultaneously(
-        waypoints, aerial_depot, ground_depot,
-        base_params, param_combinations
-    )
-    
-    print("Multi-parameter analysis results:")
-    print(multi_param_results)
+    results = sensitivity_analysis()
+    visualize_sensitivity_analysis(results)

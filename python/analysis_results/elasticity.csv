@@ -1,0 +1,25 @@
+Parameter,Parameter Value,Elasticity,% Change from Base
+aerial_speed,25.0,0.8,-50.0
+aerial_speed,75.0,0.4,50.0
+aerial_speed,100.0,0.4,100.0
+ground_speed,10.0,0.8,-50.0
+ground_speed,30.0,0.4,50.0
+ground_speed,40.0,0.4,100.0
+aerial_max_time,30.0,0.8,-50.0
+aerial_max_time,90.0,0.4,50.0
+aerial_max_time,120.0,0.6,100.0
+ground_max_time,60.0,0.8,-50.0
+ground_max_time,180.0,0.4,50.0
+ground_max_time,240.0,0.4,100.0
+aerial_inspection_time,0.5,-0.0,-50.0
+aerial_inspection_time,1.5,0.0,50.0
+aerial_inspection_time,2.0,0.0,100.0
+ground_inspection_time,1.5,-0.0,-50.0
+ground_inspection_time,4.5,0.0,50.0
+ground_inspection_time,6.0,0.0,100.0
+num_aerial_robots,1.0,0.6000000000000001,-66.66666666666666
+num_aerial_robots,5.0,0.30000000000000004,66.66666666666666
+num_aerial_robots,7.0,0.30000000000000004,133.33333333333331
+num_ground_robots,1.0,0.6000000000000001,-66.66666666666666
+num_ground_robots,5.0,0.30000000000000004,66.66666666666666
+num_ground_robots,7.0,0.45,133.33333333333331
