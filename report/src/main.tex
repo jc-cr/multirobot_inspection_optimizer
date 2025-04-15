@@ -11,7 +11,12 @@
 	\noindent%
 
 	\begin{abstract}
-		This report
+	This report presents a Mixed Integer Linear Programming (MILP) approach for optimizing multi-robot inspection planning in outdoor construction environments. 
+	Motivated by the growing use of precast concrete elements requiring efficient inspection methods, the research develops a coordinated system where aerial robots rapidly locate inspection targets while ground robots perform detailed inspections. 
+	The mathematical model maximizes inspection coverage while respecting constraints including robot speed, battery endurance, and operational precedence requirements. 
+	Analysis revealed that ground robot quantity and aerial robot endurance were the most influential parameters, while inspection time had negligible impact on performance. 
+	The formulation was implemented in Python using PuLP with an interactive browser-based visualization interface. 
+	Computational performance testing showed non-monotonic scaling behavior with map size and waypoint count. 
 	\end{abstract}
 
 	\section{Introduction}\label{intro}
@@ -312,6 +317,8 @@
 
 		A Python program is created to solve the MILP formulation. 
 		We use PuLP, a LP and MILP solving library in Python \cite{pulp}.
+		The default CBC solver from PuLP is used to solve our model.
+
 		The code for the developed model can be found at \url{https://github.com/jc-cr/multirobot_inspection_optimizer}.
 
 		To showcase the models capabilities an interactive demo is created with the same repository. 
@@ -328,13 +335,135 @@
 
 	\section{Numerical Results}\label{numerical_results}
 
+	\subsection{Computational Performance}
+
+	For computational performance analysis, the baseline parameters were used while the time taken to solve the MILP problem was benchmarked with regards to waypoint size increases and map size increases (waypoints farther apart) up to a 1000 x 1000 meter map range. 
+
+	Tests were conducted using a Thinkpad T490s with an Intel i7 core in a python:3.12-slim-bookworm docker container.
+	The PuLP optimization library was used with the CBC solver and a 500-second solver time limit.
+
+	For the waypoint scaling experiment, the map size was fixed at 500 x 500 meters while varying the number of waypoints (5, 10, 15, 20, and 25). 
+	For map size scaling, the number of waypoints was fixed at 20 while testing map sizes of 100, 200, 500, and 1000 meters square. 
+	
+	Both experiments used identical robot baseline parameters of 3 aerial and 3 ground robots with speeds of 50 m/min and 20 m/min respectively, and maximum flight/travel times of 60 and 120 minutes.
+
+	\figref{fig:waypoint_time} shows the relationship between waypoint count and solver time. 
+	Interestingly, the model exhibits non-monotonic performance behavior with solution time peaking at 15 waypoints before decreasing for larger problem instances.
+
+	\begin{figure}[htbp]
+			\centering
+			\includegraphics[width=0.9\linewidth,height=0.9\textheight,keepaspectratio]{waypoints_vs_time.pdf}
+			\caption{Solution time as a function of waypoint count, showing non-monotonic performance with peak computation time occurring at 15 waypoints.}
+			\label{fig:waypoint_time}
+	\end{figure}
+
+	\figref{fig:map_time} shows the time taken to solve problems with varying map sizes while keeping the number of waypoints constant. 
+	Similar to the waypoint experiment, we observe non-monotonic scaling behavior with solution time peaking at 500 meters before declining to only 5.8 seconds at 1000 meters. 
+
+	\begin{figure}[htbp]
+			\centering
+			\includegraphics[width=0.9\linewidth,height=0.9\textheight,keepaspectratio]{map_size_vs_time.pdf}
+			\caption{Solution time as a function of map size, demonstrating that computational difficulty peaks at intermediate map sizes rather than at maximum tested dimensions.}
+			\label{fig:map_time}
+	\end{figure}
 
 
+	\subsection{Sensitivity Analysis}
 
+	For the sensitivity analysis of the MILP problem, a direct perturbation approach was implemented on a 1000 $\times$ 1000 meter map with 30 waypoints distributed in a structured pattern. 
+	The analysis quantifies how the objective function (number of waypoints visited by ground robots) responds to variations in key model parameters. Eight parameters were evaluated: aerial and ground robot speeds, maximum operation times, inspection times, and fleet sizes.
+
+	The tornado chart in \figref{fig:tornado_chart} provides an overview of the findings view of the findings.
+	The number of ground robots and aerial maximum operation time demonstrated the most impact to the final objective value. 
+	Whereas the ground and aerial inspection times demonstrated minimal impact on the objective function.
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.7\linewidth,height=0.7\textheight,keepaspectratio]{tornado_chart.pdf}
+		\caption{Parameter sensitivity tornado chart showing the maximum percentage change in objective value when each parameter is varied across its tested range.}
+		\label{fig:tornado_chart}
+	\end{figure}
+
+	\figref{fig:ground_robots} shows a postive increase rate to the objective value when the number of ground robots is increased. 
+	A relationship also seen in \figref{fig:aerial_robots}.
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.7\linewidth,height=0.7\textheight,keepaspectratio]{sensitivity_num_ground_robots.pdf}
+		\caption{Sensitivity to ground robot fleet size, showing a consistent linear improvement in objective value as the number of ground robots increases.}
+		\label{fig:ground_robots}
+	\end{figure}
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.7\linewidth,height=0.7\textheight,keepaspectratio]{sensitivity_num_aerial_robots.pdf}
+		\caption{Sensitivity to aerial robot fleet size, demonstrating a linear relationship between the number of aerial robots and mission performance.}
+		\label{fig:aerial_robots}
+	\end{figure}
+
+	Robot speed parameters also exhibited significant impact on mission performance.
+	As illustrated in \figref{fig:ground_speed}, increasing ground speed from results in an increase to the objective value.
+	Similarly, \figref{fig:aerial_speed} shows that increasing aerial speed showed similar performance gains.
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.7\linewidth,height=0.7\textheight,keepaspectratio]{sensitivity_ground_speed.pdf}
+		\caption{Sensitivity to ground robot speed, showing substantial improvements in objective value as speed increases from 10 to 40 m/min.}
+		\label{fig:ground_speed}
+	\end{figure}
+
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.7\linewidth,height=0.7\textheight,keepaspectratio]{sensitivity_aerial_speed.pdf}
+		\caption{Sensitivity to aerial robot speed, illustrating the positive correlation between aerial mobility and mission performance.}
+		\label{fig:aerial_speed}
+	\end{figure}
+
+
+	The maximum operation time parameters for either robot demonstrated equally substantial effects. \figref{fig:ground_max_time} shows that extending ground robot operating time creates an improvement in the objective value, while \figref{fig:aerial_max_time} illustrates that increasing aerial maximum time also improves the objective value.
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.7\linewidth,height=0.7\textheight,keepaspectratio]{sensitivity_ground_max_time.pdf}
+		\caption{Sensitivity to ground robot maximum operation time, demonstrating how increased endurance enables more waypoints to be visited.}
+		\label{fig:ground_max_time}
+	\end{figure}
+
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.7\linewidth,height=0.7\textheight,keepaspectratio]{sensitivity_aerial_max_time.pdf}
+		\caption{Sensitivity to aerial robot maximum operation time, showing significant objective value improvements with extended flight duration.}
+		\label{fig:aerial_max_time}
+	\end{figure}
+
+
+	Notably, there was an insensitivity of the objective function to inspection time parameters. 
+	As shown in \figref{fig:ground_inspection} and \figref{fig:aerial_inspection}, varying the ground inspection time from 1 to 6 minutes and aerial inspection time from 0.5 to 2 minutes produced no change in the objective value. 
+	This suggests that in the current problem formulation, the bottleneck lies in robot mobility rather than inspection efficiency.
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.7\linewidth,height=0.7\textheight,keepaspectratio]{sensitivity_ground_inspection_time.pdf}
+		\caption{Sensitivity to ground inspection time, demonstrating that the time required for ground robots to inspect waypoints has no impact on the objective value.}
+		\label{fig:ground_inspection}
+	\end{figure}
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.7\linewidth,height=0.7\textheight,keepaspectratio]{sensitivity_aerial_inspection_time.pdf}
+		\caption{Sensitivity to aerial inspection time, showing that aerial reconnaissance duration at waypoints does not affect mission performance.}
+		\label{fig:aerial_inspection}
+	\end{figure}
+
+
+	\newpage
 	\section{Conclusion}\label{conclusion}
 
 	In this report a Mixed Integer Linear Program was developed to optimize the inspection coverage of a ground and aerial robot fleet. 
 	We formulated a model which maximized the number of waypoints covered by N robots with variable parameters and operating capabilities.
+
 	This formulation was then implemented in a Python program using the PuLP library of solvers and a browser based GUI was developed to allow for an interactive demonstration environment.
 
 	\newpage

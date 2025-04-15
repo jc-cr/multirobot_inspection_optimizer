@@ -5,12 +5,12 @@
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \@writefile{toc}{\contentsline {section}{Introduction}{1}{section*.1}\protected@file@percent }
 \newlabel{intro}{{}{1}{Introduction}{section*.1}{}}
-\@writefile{toc}{\contentsline {section}{Problem Description}{1}{section*.2}\protected@file@percent }
-\newlabel{prob_desc}{{}{1}{Problem Description}{section*.2}{}}
 \citation{oberlin2009transformation}
 \citation{albert2017uav}
 \citation{bektas2006multiple}
 \citation{NICOLA201967}
+\@writefile{toc}{\contentsline {section}{Problem Description}{2}{section*.2}\protected@file@percent }
+\newlabel{prob_desc}{{}{2}{Problem Description}{section*.2}{}}
 \@writefile{toc}{\contentsline {section}{Literature Review}{2}{section*.3}\protected@file@percent }
 \newlabel{lit_review}{{}{2}{Literature Review}{section*.3}{}}
 \@writefile{toc}{\contentsline {section}{Mathematical Model}{2}{section*.4}\protected@file@percent }
@@ -23,12 +23,12 @@
 \@writefile{toc}{\contentsline {subsection}{Objective Function}{3}{section*.10}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{Constraints}{3}{section*.11}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Assignment Constraints}{3}{section*.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Robot Usage Constraints}{3}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Robot Usage Constraints}{4}{section*.13}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Precedence Constraints}{4}{section*.14}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Time Constraints}{5}{section*.15}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Approximate Route Length Constraints}{5}{section*.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{Complete Optimization Problem}{5}{section*.17}\protected@file@percent }
 \citation{pulp}
+\@writefile{toc}{\contentsline {subsection}{Complete Optimization Problem}{6}{section*.17}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{Solution Method}{6}{section*.62}\protected@file@percent }
 \newlabel{sol_methods}{{}{6}{Solution Method}{section*.62}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Developed browser based GUI showcasing a solved inspection plan.}}{7}{figure.caption.63}\protected@file@percent }
@@ -36,8 +36,32 @@
 \newlabel{fig:demo}{{1}{7}{Developed browser based GUI showcasing a solved inspection plan}{figure.caption.63}{}}
 \@writefile{toc}{\contentsline {section}{Numerical Results}{7}{section*.64}\protected@file@percent }
 \newlabel{numerical_results}{{}{7}{Numerical Results}{section*.64}{}}
-\@writefile{toc}{\contentsline {section}{Conclusion}{7}{section*.65}\protected@file@percent }
-\newlabel{conclusion}{{}{7}{Conclusion}{section*.65}{}}
+\@writefile{toc}{\contentsline {subsection}{Computational Performance}{7}{section*.65}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Solution time as a function of waypoint count, showing non-monotonic performance with peak computation time occurring at 15 waypoints.}}{8}{figure.caption.66}\protected@file@percent }
+\newlabel{fig:waypoint_time}{{2}{8}{Solution time as a function of waypoint count, showing non-monotonic performance with peak computation time occurring at 15 waypoints}{figure.caption.66}{}}
+\@writefile{toc}{\contentsline {subsection}{Sensitivity Analysis}{8}{section*.68}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Solution time as a function of map size, demonstrating that computational difficulty peaks at intermediate map sizes rather than at maximum tested dimensions.}}{9}{figure.caption.67}\protected@file@percent }
+\newlabel{fig:map_time}{{3}{9}{Solution time as a function of map size, demonstrating that computational difficulty peaks at intermediate map sizes rather than at maximum tested dimensions}{figure.caption.67}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Parameter sensitivity tornado chart showing the maximum percentage change in objective value when each parameter is varied across its tested range.}}{9}{figure.caption.69}\protected@file@percent }
+\newlabel{fig:tornado_chart}{{4}{9}{Parameter sensitivity tornado chart showing the maximum percentage change in objective value when each parameter is varied across its tested range}{figure.caption.69}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Sensitivity to ground robot fleet size, showing a consistent linear improvement in objective value as the number of ground robots increases.}}{10}{figure.caption.70}\protected@file@percent }
+\newlabel{fig:ground_robots}{{5}{10}{Sensitivity to ground robot fleet size, showing a consistent linear improvement in objective value as the number of ground robots increases}{figure.caption.70}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Sensitivity to aerial robot fleet size, demonstrating a linear relationship between the number of aerial robots and mission performance.}}{10}{figure.caption.71}\protected@file@percent }
+\newlabel{fig:aerial_robots}{{6}{10}{Sensitivity to aerial robot fleet size, demonstrating a linear relationship between the number of aerial robots and mission performance}{figure.caption.71}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Sensitivity to ground robot speed, showing substantial improvements in objective value as speed increases from 10 to 40 m/min.}}{11}{figure.caption.72}\protected@file@percent }
+\newlabel{fig:ground_speed}{{7}{11}{Sensitivity to ground robot speed, showing substantial improvements in objective value as speed increases from 10 to 40 m/min}{figure.caption.72}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Sensitivity to aerial robot speed, illustrating the positive correlation between aerial mobility and mission performance.}}{11}{figure.caption.73}\protected@file@percent }
+\newlabel{fig:aerial_speed}{{8}{11}{Sensitivity to aerial robot speed, illustrating the positive correlation between aerial mobility and mission performance}{figure.caption.73}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Sensitivity to ground robot maximum operation time, demonstrating how increased endurance enables more waypoints to be visited.}}{12}{figure.caption.74}\protected@file@percent }
+\newlabel{fig:ground_max_time}{{9}{12}{Sensitivity to ground robot maximum operation time, demonstrating how increased endurance enables more waypoints to be visited}{figure.caption.74}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Sensitivity to aerial robot maximum operation time, showing significant objective value improvements with extended flight duration.}}{12}{figure.caption.75}\protected@file@percent }
+\newlabel{fig:aerial_max_time}{{10}{12}{Sensitivity to aerial robot maximum operation time, showing significant objective value improvements with extended flight duration}{figure.caption.75}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Sensitivity to ground inspection time, demonstrating that the time required for ground robots to inspect waypoints has no impact on the objective value.}}{13}{figure.caption.76}\protected@file@percent }
+\newlabel{fig:ground_inspection}{{11}{13}{Sensitivity to ground inspection time, demonstrating that the time required for ground robots to inspect waypoints has no impact on the objective value}{figure.caption.76}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Sensitivity to aerial inspection time, showing that aerial reconnaissance duration at waypoints does not affect mission performance.}}{13}{figure.caption.77}\protected@file@percent }
+\newlabel{fig:aerial_inspection}{{12}{13}{Sensitivity to aerial inspection time, showing that aerial reconnaissance duration at waypoints does not affect mission performance}{figure.caption.77}{}}
+\@writefile{toc}{\contentsline {section}{Conclusion}{14}{section*.78}\protected@file@percent }
+\newlabel{conclusion}{{}{14}{Conclusion}{section*.78}{}}
 \bibstyle{IEEEtran}
 \citation{*}
 \bibdata{/project/src/ref}
@@ -49,4 +73,4 @@
 \bibcite{christofides1981exact}{6}
 \bibcite{laporte1992vehicle}{7}
 \bibcite{laporte1980cutting}{8}
-\gdef \@abspage@last{8}
+\gdef \@abspage@last{15}
