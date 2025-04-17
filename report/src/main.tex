@@ -105,8 +105,8 @@
 				\begin{itemize}
 				\item $t_{ij}^{A} = \frac{\text{dist}(i,j)}{s_A}$: Travel time for aerial robots from $i$ to $j$ (minutes)
 				\item $t_{ij}^{G} = \frac{\text{dist}(i,j)}{s_G}$: Travel time for ground robots from $i$ to $j$ (minutes)
-				\item $M_A$: Big-M value for aerial robot time constraints
-				\item $M_G$: Big-M value for ground robot time constraints
+				\item $M_A$: Big-M value for aerial robot time constraints. Calculated as $T_A^{\max}$ + max($t_{ij}^{A}$) + $t_A^{\text{insp}}$
+				\item $M_G$: Big-M value for ground robot time constraints.  Calculated as $T_G^{\max}$ + max($t_{ij}^{G}$) + $t_G^{\text{insp}}$
 				\end{itemize}
 
 			\subsubsection{Decision Variables}
