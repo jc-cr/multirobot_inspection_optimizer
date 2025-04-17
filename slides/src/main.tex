@@ -14,22 +14,28 @@
     
     \begin{frame}{Introduction}
       \begin{itemize}
-        \item Motivated by outdoor construction site inspection challenges
-        \item Precast concrete elements require efficient inspection methods
+        \item Based on previous work done in an outdoor concrete inspection multirobot framework
+        \item Precast concrete elements require efficient inspection methods after being transported to a site
         \item Multi-robot approach:
           \begin{itemize}
             \item Aerial robots locate targets
             \item Ground robots perform detailed inspections
           \end{itemize}
-        \item Need for flexible inspection plans in dynamic environments
-        \item MILP approach maximizes inspection coverage
+        \item For this project wanted to see if we could extend this idea to planning of multiple robots across an inspection site
       \end{itemize}
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.3\linewidth]{figures/concrete.pdf}
+        \caption{\tiny{\url{https://kta.com/inspection-of-the-precast-prestressed-concrete-fabrication-process/}}}
+      \end{figure}
     \end{frame}
 
     \begin{frame}{Problem Description}
       \begin{itemize}
         \item Two robot types: aerial and ground mobile robots
         \item Inspection targets as waypoints in a 2D plane
+        \item Depot location for each robot type
         \item Sequential operation:
           \begin{itemize}
             \item Aerial robots verify waypoint location first
@@ -38,90 +44,68 @@
         \item Robot constraints:
           \begin{itemize}
             \item Fixed speeds (meters/minute)
-            \item Limited operation time (battery endurance)
+            \item Limited operation time (battery life time after leaving depot)
             \item Required inspection time at waypoints
           \end{itemize}
-        \item Objective: Maximize waypoint visits in a single inspection loop
+        \item Objective: Maximize waypoint visits in a single inspection loop. 
+        \item Becomes a MILP problem. Linear objective function and linear constraints but use binary and continuous variables. 
       \end{itemize}
+
     \end{frame}
 
     \begin{frame}{Literature Review}
       \begin{itemize}
-        \item Problem resembles multiple traveling salesman problem (mTSP)
         \item Prior works demonstrate multi-robot planning applications
+        \item Problem resembles multiple traveling salesman problem (mTSP)
         \item Traditional MILP for mTSP:
           \begin{itemize}
             \item Routing variables 
             \item Subtour elimination constraints
           \end{itemize}
-        \item Simplification: Route length approximation
-        \item Roundtrip distances from depot to waypoints estimate travel times
+        \item Initially tried this approach but solving time was too slow and larger problems became infeasible (likely implementation error) so used a simplification
+        \item Route approximation: roundtrip distances from depot to waypoints estimate travel times
       \end{itemize}
     \end{frame}
 
     \begin{frame}{Model}
-      \begin{columns}
-        \begin{column}{0.5\textwidth}
-          \textbf{Sets \& Parameters:}
-          \begin{itemize}
-            \item Waypoints $N$, indexed by $i$
-            \item Aerial robots $K$, ground robots $L$
-            \item Speeds: $s_A$, $s_G$
-            \item Max operation times: $T_A^{max}$, $T_G^{max}$
-            \item Inspection times: $t_A^{insp}$, $t_G^{insp}$
-          \end{itemize}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-          \textbf{Decision Variables:}
-          \begin{itemize}
-            \item $w_i^{a,k}$: Aerial robot $k$ visits waypoint $i$
-            \item $w_i^{g,l}$: Ground robot $l$ visits waypoint $i$
-            \item $a_i^k$: Aerial completion time
-            \item $g_i^l$: Ground completion time
-            \item $use_k^a$, $use_l^g$: Robot usage
-          \end{itemize}
-        \end{column}
-      \end{columns}
-      \vspace{0.5cm}
-      \textbf{Objective:} Maximize $\sum_{i \in N}\sum_{l \in L} w_i^{g,l}$
-      \vspace{0.3cm}
-      
-      \textbf{Key Constraints:}
-      \begin{itemize}
-        \item Assignment: One robot per waypoint 
-        \item Precedence: Aerial robots visit before ground robots
-        \item Time constraints: Inspection durations, battery limits
-      \end{itemize}
-    \end{frame}
-
-    \begin{frame}{Solution Method}
-      \begin{itemize}
-        \item Implemented in Python using PuLP library
-        \item CBC solver from PuLP used for optimization
-        \item Interactive browser-based GUI developed:
-          \begin{itemize}
-            \item Parameter input for robot specifications
-            \item Waypoint location setting
-            \item Real-time solution visualization
-          \end{itemize}
-        \item Code available at GitHub repository
-      \end{itemize}
-      
-      % Insert demo image
       \begin{figure}
-        \centering
-        \includegraphics[width=0.7\linewidth]{figures/insp.pdf}
-        \caption{Browser-based GUI showcasing solved inspection plan}
+        \begin{minipage}{0.5\textwidth}
+          \includegraphics[width=\textwidth]{figures/opt1.pdf}
+        \end{minipage}
+        \hfill
+        \begin{minipage}{0.5\textwidth}
+          \includegraphics[width=\textwidth]{figures/opt2.pdf}
+        \end{minipage}
       \end{figure}
     \end{frame}
 
-    \begin{frame}{Numerical Results - Computational Performance}
-      \begin{itemize}
-        \item Testing environment: 
-          \begin{itemize}
+  \begin{frame}{Solution Method}
+    \begin{itemize}
+      \item Implemented in Python using PuLP library
+      \item CBC solver from PuLP used for optimization
+      \item Interactive browser-based GUI developed:
+        \begin{itemize}
+          \item Parameter input for robot specifications
+          \item Waypoint location setting
+          \item Real-time solution visualization
+        \end{itemize}
+      \item Code available at \href{https://github.com/jc-cr/multirobot_inspection_optimizer}{GitHub repository}
+    \end{itemize}
+    
+        % Insert demo image
+        \begin{figure}
+          \centering
+          \includegraphics[width=0.5\linewidth]{figures/insp.pdf}
+        \end{figure}
+      \end{frame}
+
+      \begin{frame}{Numerical Results - Computational Performance}
+        \begin{itemize}
+          \item Testing environment: 
+            \begin{itemize}
             \item Intel i7, Python 3.12 Docker container
-            \item 500s solver time limit
           \end{itemize}
+        \item Tested waypoint scaling (5 to 25 waypoints) and map size scaling (100 to 1000 m)
         \item Non-monotonic scaling behavior:
           \begin{itemize}
             \item Solution time peaks at 15 waypoints then decreases
@@ -134,32 +118,114 @@
         \centering
         \includegraphics[width=0.48\linewidth]{figures/waypoints_vs_time.pdf}
         \includegraphics[width=0.48\linewidth]{figures/map_size_vs_time.pdf}
-        \caption{Left: Solution time vs waypoint count. Right: Solution time vs map size}
       \end{figure}
     \end{frame}
 
     \begin{frame}{Numerical Results - Sensitivity Analysis}
-      \begin{itemize}
-        \item Most influential parameters:
-          \begin{itemize}
-            \item Number of ground robots
-            \item Aerial robot maximum operation time
-          \end{itemize}
-        \item Significant impact: Robot speeds
-        \item Minimal impact: Inspection times
-      \end{itemize}
+    \begin{columns}
+      \begin{column}{0.48\textwidth}
+        \begin{itemize}
+          \item Using fixed waypoints and map size we solve multiple times varying 8 params: robot speeds, operation times, inspection times, and fleet sizes.
+          \item Most influential parameters:
+            \begin{itemize}
+              \item Number of ground robots
+              \item Aerial robot maximum operation time
+            \end{itemize}
+          \item Minimal impact: Inspection times
+        \end{itemize}
+      \end{column}
       
-      % Insert tornado chart
+      \begin{column}{0.48\textwidth}
+        \begin{figure}
+          \includegraphics[width=\textwidth]{figures/tornado_chart.pdf}
+        \end{figure}
+      \end{column}
+    \end{columns}
+  \end{frame}
+
+  \begin{frame}{Numerical Results - Ground Robot Sensitivity Analysis}
+    \begin{columns}
+      \begin{column}{0.46\textwidth}
+        \begin{figure}
+          \centering
+          \includegraphics[width=\textwidth]{figures/sensitivity_ground_speed.pdf}
+        \end{figure}
+      \end{column}
+      
+      \begin{column}{0.46\textwidth}
+        \begin{figure}
+          \centering
+          \includegraphics[width=\textwidth]{figures/sensitivity_ground_max_time.pdf}
+        \end{figure}
+      \end{column}
+    \end{columns}
+    
+    
+    \begin{columns}
+      \begin{column}{0.46\textwidth}
+        \begin{figure}
+          \centering
+          \includegraphics[width=\textwidth]{figures/sensitivity_ground_inspection_time.pdf}
+        \end{figure}
+      \end{column}
+      
+      \begin{column}{0.46\textwidth}
+        \begin{figure}
+          \centering
+          \includegraphics[width=\textwidth]{figures/sensitivity_num_ground_robots.pdf}
+        \end{figure}
+      \end{column}
+    \end{columns}
+  \end{frame}
+
+\begin{frame}{Numerical Results - Aerial Robot Sensitivity Analysis}
+  \begin{columns}
+    \begin{column}{0.46\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=0.5\linewidth]{figures/tornado_chart.pdf}
+        \includegraphics[width=\textwidth]{figures/sensitivity_aerial_speed.pdf}
       \end{figure}
-    \end{frame}
+    \end{column}
+    
+    \begin{column}{0.46\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/sensitivity_aerial_max_time.pdf}
+      \end{figure}
+    \end{column}
+  \end{columns}
+  
+  
+  \begin{columns}
+    \begin{column}{0.46\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/sensitivity_aerial_inspection_time.pdf}
+      \end{figure}
+    \end{column}
+    
+    \begin{column}{0.46\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/sensitivity_num_aerial_robots.pdf}
+      \end{figure}
+    \end{column}
+  \end{columns}
+\end{frame}
 
+
+
+  
     \begin{frame}{Demo Video}
+    \centering
+    \begin{figure}
       \centering
-      
-    \end{frame}
+      \href{https://www.youtube-nocookie.com/embed/rC7g-lJ-lPA?playlist=rC7g-lJ-lPA&autoplay=1&iv_load_policy=3&loop=1&start=}{
+        \includegraphics[width=0.7\linewidth]{figures/insp.pdf}
+      }
+      \caption{Click to watch the demo video}
+    \end{figure}
+  \end{frame}
     
     \lastslide
 \end{document}

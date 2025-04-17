@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.30)  16 APR 2025 02:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.30)  17 APR 2025 02:08
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1405,7 +1405,7 @@ LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
 al/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_4jropk.enc}{/usr/loc
 al/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_emkxm5.enc}]
 LaTeX Font Info:    Trying to load font information for TS1+SourceSansPro-TLF o
-n input line 27.
+n input line 32.
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/sourcesanspro/TS1SourceSansPro-TL
 F.fd
@@ -1413,44 +1413,41 @@ File: TS1SourceSansPro-TLF.fd 2020/01/19 (autoinst) Font definitions for TS1/So
 urceSansPro-TLF.
 )
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 27.
+(Font)              `TS1/SourceSansPro-TLF/regular/n' on input line 32.
 LaTeX Font Info:    Font shape `TS1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 10.95pt on input line 27.
+(Font)              scaled to size 10.95pt on input line 32.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `SourceSansPro-TLF' (encoding: TS1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
+<figures/concrete.pdf, id=21, 527.9725pt x 395.4775pt>
+File: figures/concrete.pdf Graphic file (type pdf)
+<use figures/concrete.pdf>
+Package pdftex.def Info: figures/concrete.pdf  used on input line 32.
+(pdftex.def)             Requested size: 100.7238pt x 75.44322pt.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 27.
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 32.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 14.4pt on input line 27.
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/sc' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/sc' on input line 27.
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/sc' will be
-(Font)              scaled to size 14.4pt on input line 27.
+(Font)              scaled to size 10.0pt on input line 32.
+LaTeX Font Info:    Trying to load font information for T1+SourceCodePro-TLF on
+ input line 32.
 
-
-[2
-
-{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_5ponh6.enc}
-]
-
-[3
-
-]
-
-[4
-
-]
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/b/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/bold/n' on input line 95.
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/bold/n' will be
-(Font)              scaled to size 10.95pt on input line 95.
+(/usr/local/texlive/2025/texmf-dist/tex/latex/sourcecodepro/T1SourceCodePro-TLF
+.fd
+File: T1SourceCodePro-TLF.fd 2018/02/18 (autoinst) Font definitions for T1/Sour
+ceCodePro-TLF.
+)
+LaTeX Font Info:    Font shape `T1/SourceCodePro-TLF/m/n' will be
+(Font)              scaled to size 6.0pt on input line 32.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `SourceCodePro-TLF' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 95.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 32.
 
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -1459,7 +1456,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 95.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 32.
 
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -1469,26 +1466,18 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 95.
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 32.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 9.0pt on input line 95.
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 95.
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 7.0pt on input line 95.
+(Font)              scaled to size 5.0pt on input line 32.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 95.
+(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 32.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
-(Font)              scaled to size 10.95pt on input line 95.
+(Font)              scaled to size 6.0pt on input line 32.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 95.
+(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 32.
 LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
-(Font)              scaled to size 9.0pt on input line 95.
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 95.
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
-(Font)              scaled to size 7.0pt on input line 95.
-LaTeX Font Info:    Trying to load font information for U+zeur on input line 95
+(Font)              scaled to size 5.0pt on input line 32.
+LaTeX Font Info:    Trying to load font information for U+zeur on input line 32
 .
 
 (/usr/local/texlive/2025/texmf-dist/tex/latex/eulervm/uzeur.fd
@@ -1498,31 +1487,84 @@ File: uzeur.fd 2005/01/11 v4.0 (WaS)
 File: mt-eur.cfg 2006/07/31 v1.1 microtype config. file: AMS Euler Roman (RS)
 )
 LaTeX Font Info:    Font shape `U/psy/m/n' will be
-(Font)              scaled to size 10.95pt on input line 95.
+(Font)              scaled to size 6.0pt on input line 32.
 LaTeX Font Info:    Font shape `U/psy/m/n' will be
-(Font)              scaled to size 9.0pt on input line 95.
-LaTeX Font Info:    Font shape `U/psy/m/n' will be
-(Font)              scaled to size 7.0pt on input line 95.
+(Font)              scaled to size 5.0pt on input line 32.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 32.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
+(Font)              scaled to size 14.4pt on input line 32.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/sc' aliased to
+(Font)              `T1/SourceSansPro-TLF/regular/sc' on input line 32.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/sc' will be
+(Font)              scaled to size 14.4pt on input line 32.
 
-Overfull \vbox (24.40884pt too high) detected at line 95
+Overfull \vbox (35.77928pt too high) detected at line 32
  []
 
 
 
-[5
+[2
+
+{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_5ponh6.enc}
+{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcecodepro/a_lutrty.enc}
+ <./figures/concrete.pdf>]
+
+[3
 
 ]
-<figures/insp.pdf, id=45, 838.54582pt x 573.5829pt>
+
+[4
+
+]
+<figures/opt1.pdf, id=45, 760.26135pt x 413.2509pt>
+File: figures/opt1.pdf Graphic file (type pdf)
+<use figures/opt1.pdf>
+Package pdftex.def Info: figures/opt1.pdf  used on input line 80.
+(pdftex.def)             Requested size: 167.8713pt x 91.24966pt.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 80.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
+(Font)              scaled to size 9.0pt on input line 80.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
+(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 80.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
+(Font)              scaled to size 7.0pt on input line 80.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
+(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 80.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
+(Font)              scaled to size 10.95pt on input line 80.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
+(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 80.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
+(Font)              scaled to size 9.0pt on input line 80.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/it' aliased to
+(Font)              `T1/SourceSansPro-TLF/regular/it' on input line 80.
+LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/it' will be
+(Font)              scaled to size 7.0pt on input line 80.
+LaTeX Font Info:    Font shape `U/psy/m/n' will be
+(Font)              scaled to size 10.95pt on input line 80.
+LaTeX Font Info:    Font shape `U/psy/m/n' will be
+(Font)              scaled to size 9.0pt on input line 80.
+LaTeX Font Info:    Font shape `U/psy/m/n' will be
+(Font)              scaled to size 7.0pt on input line 80.
+<figures/opt2.pdf, id=46, 754.99265pt x 398.9495pt>
+File: figures/opt2.pdf Graphic file (type pdf)
+<use figures/opt2.pdf>
+Package pdftex.def Info: figures/opt2.pdf  used on input line 80.
+(pdftex.def)             Requested size: 167.8713pt x 88.70053pt.
+
+
+[5
+
+ <./figures/opt1.pdf> <./figures/opt2.pdf>]
+<figures/insp.pdf, id=61, 838.54582pt x 573.5829pt>
 File: figures/insp.pdf Graphic file (type pdf)
 <use figures/insp.pdf>
-Package pdftex.def Info: figures/insp.pdf  used on input line 116.
-(pdftex.def)             Requested size: 235.01881pt x 160.75964pt.
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/m/n' aliased to
-(Font)              `T1/SourceSansPro-TLF/regular/n' on input line 116.
-LaTeX Font Info:    Font shape `T1/SourceSansPro-TLF/regular/n' will be
-(Font)              scaled to size 10.0pt on input line 116.
+Package pdftex.def Info: figures/insp.pdf  used on input line 100.
+(pdftex.def)             Requested size: 167.8713pt x 114.82832pt.
 
-Overfull \vbox (89.07571pt too high) detected at line 116
+Overfull \vbox (15.5444pt too high) detected at line 100
  []
 
 
@@ -1530,46 +1572,105 @@ Overfull \vbox (89.07571pt too high) detected at line 116
 [6
 
  <./figures/insp.pdf>]
-<figures/waypoints_vs_time.pdf, id=55, 722.7pt x 433.62pt>
+<figures/waypoints_vs_time.pdf, id=71, 722.7pt x 433.62pt>
 File: figures/waypoints_vs_time.pdf Graphic file (type pdf)
 <use figures/waypoints_vs_time.pdf>
-Package pdftex.def Info: figures/waypoints_vs_time.pdf  used on input line 139.
+Package pdftex.def Info: figures/waypoints_vs_time.pdf  used on input line 122.
 
 (pdftex.def)             Requested size: 161.15501pt x 96.69353pt.
-<figures/map_size_vs_time.pdf, id=56, 722.7pt x 433.62pt>
+<figures/map_size_vs_time.pdf, id=72, 722.7pt x 433.62pt>
 File: figures/map_size_vs_time.pdf Graphic file (type pdf)
 <use figures/map_size_vs_time.pdf>
-Package pdftex.def Info: figures/map_size_vs_time.pdf  used on input line 139.
+Package pdftex.def Info: figures/map_size_vs_time.pdf  used on input line 122.
 (pdftex.def)             Requested size: 161.15501pt x 96.69353pt.
-
-Overfull \vbox (8.0096pt too high) detected at line 139
- []
-
 
 
 [7
 
  <./figures/waypoints_vs_time.pdf> <./figures/map_size_vs_time.pdf>]
-<figures/tornado_chart.pdf, id=75, 722.7pt x 578.16pt>
+<figures/tornado_chart.pdf, id=91, 722.7pt x 578.16pt>
 File: figures/tornado_chart.pdf Graphic file (type pdf)
 <use figures/tornado_chart.pdf>
-Package pdftex.def Info: figures/tornado_chart.pdf  used on input line 157.
-(pdftex.def)             Requested size: 201.44762pt x 161.1603pt.
-
-Overfull \vbox (27.87637pt too high) detected at line 157
- []
-
+Package pdftex.def Info: figures/tornado_chart.pdf  used on input line 144.
+(pdftex.def)             Requested size: 161.15501pt x 128.9247pt.
 
 
 [8
 
  <./figures/tornado_chart.pdf>]
+<figures/sensitivity_ground_speed.pdf, id=103, 722.7pt x 433.62pt>
+File: figures/sensitivity_ground_speed.pdf Graphic file (type pdf)
+<use figures/sensitivity_ground_speed.pdf>
+Package pdftex.def Info: figures/sensitivity_ground_speed.pdf  used on input li
+ne 179.
+(pdftex.def)             Requested size: 154.44386pt x 92.66408pt.
+<figures/sensitivity_ground_max_time.pdf, id=104, 722.7pt x 433.62pt>
+File: figures/sensitivity_ground_max_time.pdf Graphic file (type pdf)
+<use figures/sensitivity_ground_max_time.pdf>
+Package pdftex.def Info: figures/sensitivity_ground_max_time.pdf  used on input
+ line 179.
+(pdftex.def)             Requested size: 154.44386pt x 92.66408pt.
+<figures/sensitivity_ground_inspection_time.pdf, id=105, 722.7pt x 433.62pt>
+File: figures/sensitivity_ground_inspection_time.pdf Graphic file (type pdf)
+<use figures/sensitivity_ground_inspection_time.pdf>
+Package pdftex.def Info: figures/sensitivity_ground_inspection_time.pdf  used o
+n input line 179.
+(pdftex.def)             Requested size: 154.44386pt x 92.66408pt.
+<figures/sensitivity_num_ground_robots.pdf, id=106, 722.7pt x 433.62pt>
+File: figures/sensitivity_num_ground_robots.pdf Graphic file (type pdf)
+<use figures/sensitivity_num_ground_robots.pdf>
+Package pdftex.def Info: figures/sensitivity_num_ground_robots.pdf  used on inp
+ut line 179.
+(pdftex.def)             Requested size: 154.44386pt x 92.66408pt.
+
 
 [9
 
-]
+ <./figures/sensitivity_ground_speed.pdf> <./figures/sensitivity_ground_max_tim
+e.pdf> <./figures/sensitivity_ground_inspection_time.pdf> <./figures/sensitivit
+y_num_ground_robots.pdf>]
+<figures/sensitivity_aerial_speed.pdf, id=136, 722.7pt x 433.62pt>
+File: figures/sensitivity_aerial_speed.pdf Graphic file (type pdf)
+<use figures/sensitivity_aerial_speed.pdf>
+Package pdftex.def Info: figures/sensitivity_aerial_speed.pdf  used on input li
+ne 214.
+(pdftex.def)             Requested size: 154.44386pt x 92.66408pt.
+<figures/sensitivity_aerial_max_time.pdf, id=137, 722.7pt x 433.62pt>
+File: figures/sensitivity_aerial_max_time.pdf Graphic file (type pdf)
+<use figures/sensitivity_aerial_max_time.pdf>
+Package pdftex.def Info: figures/sensitivity_aerial_max_time.pdf  used on input
+ line 214.
+(pdftex.def)             Requested size: 154.44386pt x 92.66408pt.
+<figures/sensitivity_aerial_inspection_time.pdf, id=138, 722.7pt x 433.62pt>
+File: figures/sensitivity_aerial_inspection_time.pdf Graphic file (type pdf)
+<use figures/sensitivity_aerial_inspection_time.pdf>
+Package pdftex.def Info: figures/sensitivity_aerial_inspection_time.pdf  used o
+n input line 214.
+(pdftex.def)             Requested size: 154.44386pt x 92.66408pt.
+<figures/sensitivity_num_aerial_robots.pdf, id=139, 722.7pt x 433.62pt>
+File: figures/sensitivity_num_aerial_robots.pdf Graphic file (type pdf)
+<use figures/sensitivity_num_aerial_robots.pdf>
+Package pdftex.def Info: figures/sensitivity_num_aerial_robots.pdf  used on inp
+ut line 214.
+(pdftex.def)             Requested size: 154.44386pt x 92.66408pt.
+
 
 [10
+
+ <./figures/sensitivity_aerial_speed.pdf> <./figures/sensitivity_aerial_max_tim
+e.pdf> <./figures/sensitivity_aerial_inspection_time.pdf> <./figures/sensitivit
+y_num_aerial_robots.pdf>]
+File: figures/insp.pdf Graphic file (type pdf)
+<use figures/insp.pdf>
+Package pdftex.def Info: figures/insp.pdf  used on input line 228.
+(pdftex.def)             Requested size: 235.01881pt x 160.75964pt.
+
+
+[11
+
+]
+
+[12
 
 ]
 \tf@nav=\write6
@@ -1590,22 +1691,20 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 30989 strings out of 473190
- 609872 string characters out of 5715806
- 977181 words of memory out of 5000000
- 53453 multiletter control sequences out of 15000+600000
- 729017 words of font info for 161 fonts, out of 8000000 for 9000
+ 31213 strings out of 473190
+ 616334 string characters out of 5715806
+ 974181 words of memory out of 5000000
+ 53642 multiletter control sequences out of 15000+600000
+ 751180 words of font info for 191 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 128i,11n,131p,1014b,712s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/adobe/sourcesanspro/SourceSan
-sPro-Bold.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/adobe/sourcesansp
-ro/SourceSansPro-It.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/adobe/s
-ourcesanspro/SourceSansPro-Regular.pfb></usr/local/texlive/2025/texmf-dist/font
-s/type1/urw/symbol/usyr.pfb>
-Output written on output/main.pdf (10 pages, 338958 bytes).
+ 128i,11n,131p,1014b,1041s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/adobe/sourcecodepro/SourceCod
+ePro-Regular.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/adobe/sourcesa
+nspro/SourceSansPro-Regular.pfb>
+Output written on output/main.pdf (12 pages, 1312492 bytes).
 PDF statistics:
- 129 PDF objects out of 1000 (max. 8388607)
- 89 compressed objects within 1 object stream
- 21 named destinations out of 1000 (max. 500000)
- 67647 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 207 PDF objects out of 1000 (max. 8388607)
+ 137 compressed objects within 2 object streams
+ 25 named destinations out of 1000 (max. 500000)
+ 72310 words of extra memory for PDF output out of 74296 (max. 10000000)
 
