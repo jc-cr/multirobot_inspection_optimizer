@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1744855729.22286 "/project/src/main.tex" "output/main.pdf" "main" 1744855731.23915 0
-  "/project/src/main.tex" 1744855725.31755 8095 1bf92af75bf521266932f5668178fcde ""
+["pdflatex"] 1745614346.69649 "/project/src/main.tex" "output/main.pdf" "main" 1745614348.23295 0
+  "/project/src/main.tex" 1745614235.11042 8095 1bf92af75bf521266932f5668178fcde ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcecodepro/a_lutrty.enc" 1558300257 2905 926f570532f1104044846d18d8d97080 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_4jropk.enc" 1587936753 3267 177411e539fcc6ace86309ff03b22da6 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_5ponh6.enc" 1587936753 3344 37c976a8b2fa4b8f132a488735054f7d ""
@@ -292,10 +292,10 @@
   "figures/tornado_chart.pdf" 1744842380.4828 34071 011d8e132299aaa8ca9e9a0142153e3d ""
   "figures/waypoints_vs_time.pdf" 1744842380.5428 40416 668d34468b91c849a3ae328ae012d77c ""
   "output/../include/presentation.sty" 1744766351.79692 3928 d26e84b900d4ff0256643e6d995619e5 ""
-  "output/main.aux" 1744855731.04656 1980 ae2978e71ef37f8a4cee86a50d701b1e "pdflatex"
-  "output/main.nav" 1744855731.04756 1295 ef040a83926d85743749b42a2275f515 "pdflatex"
-  "output/main.out" 1744855730.39356 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "src/main.tex" 1744855725.31755 8095 1bf92af75bf521266932f5668178fcde ""
+  "output/main.aux" 1745614348.09386 1980 ae2978e71ef37f8a4cee86a50d701b1e "pdflatex"
+  "output/main.nav" 1745614348.09486 1295 ef040a83926d85743749b42a2275f515 "pdflatex"
+  "output/main.out" 1745614347.55484 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "src/main.tex" 1745614235.11042 8095 1bf92af75bf521266932f5668178fcde ""
   (generated)
   "output/main.aux"
   "output/main.log"

@@ -34,14 +34,14 @@ services:
         - "3000:3000"  # For LaTeX Workshop
       working_dir: /project
       command: tail -f /dev/null
-      volumes:
-       - ../report/src:/project/src
-       - ../report/output:/project/output
-       - ../report/figures:/project/figures
-       - ../report/include:/project/include
-      
      # volumes:
-     #   - ../slides/src:/project/src
-     #   - ../slides/output:/project/output
-     #   - ../slides/figures:/project/figures
-     #   - ../slides/include:/project/include
+     #  - ../report/src:/project/src
+     #  - ../report/output:/project/output
+     #  - ../report/figures:/project/figures
+     #  - ../report/include:/project/include
+      
+      volumes:
+       - ../slides/src:/project/src
+       - ../slides/output:/project/output
+       - ../slides/figures:/project/figures
+       - ../slides/include:/project/include
