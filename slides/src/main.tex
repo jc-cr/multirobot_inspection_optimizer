@@ -10,30 +10,30 @@
     
     \begin{frame}
       \titlepage
-      May 20.48
+      May 2025
     \end{frame}
     
     \begin{frame}{Introduction}
       \begin{columns}[c]
-        \begin{column}{0.48\textwidth}
+        \begin{column}{0.58\textwidth}
           \begin{itemize}
-            \item Based on previous work done in an outdoor concrete inspection multirobot framework
+            \item Based on previous work done in an outdoor concrete inspection multirobot framework human interface
             \item Precast concrete elements require efficient inspection methods after being transported to a site
             \item Multi-robot approach:
               \begin{itemize}
                 \item Aerial robots locate targets
                 \item Ground robots perform detailed inspections
               \end{itemize}
-            \item For this project wanted to see if we could extend this idea to planning of multiple robots across an inspection site
+            \item Wanted to extend idea to robot dispatching problem
           \end{itemize}
           
         \end{column}
 
-        \begin{column}{0.48\textwidth}
+        \begin{column}{0.40\textwidth}
 
           \begin{figure}
             \centering
-            \includegraphics[scale=0.35]{figures/concrete.pdf}
+            \includegraphics[scale=0.3]{figures/concrete.pdf}
           \end{figure}
               
         \end{column}
@@ -82,7 +82,7 @@
         \begin{itemize}
           \item Robot assignment to waypoints
           \item Sequential operations (aerial robots first, then ground)
-          \item Time limitations from battery endurance
+          \item Operating time limitations from battery endurance
           \item Travel speed and inspection time requirements
         \end{itemize}
       \item Approximates routes using roundtrip distances from depot
@@ -263,33 +263,54 @@
     \end{itemize}
   \end{frame}
 
-  \begin{frame}{Solution Method}
+  \begin{frame}{Mathematical Model - Domain Constraints}
     \begin{itemize}
-      \item Implemented in Python using PuLP library
-      \item CBC solver from PuLP used for optimization
-      \item Interactive browser-based GUI developed:
-        \begin{itemize}
-          \item Parameter input for robot specifications
-          \item Waypoint location setting
-          \item Real-time solution visualization
-        \end{itemize}
-      \item Code available at \href{https://github.com/jc-cr/multirobot_inspection_optimizer}{GitHub repository}
+      \item Domain:
+      \begin{align}
+        \quad & w_i^{a,k}, w_i^{g,l}, \text{use}_k^a, \text{use}_l^g, z_i^{k,l} \in \{0,1\} & \forall i \in N, k \in K, l \in L \tag{21} \\
+        & a_i^k, g_i^l \geq 0 & \forall i \in N, k \in K, l \in L \tag{22}
+      \end{align}
     \end{itemize}
     
-        % Insert demo image
+  \end{frame}
+  \begin{frame}{Solution Method}
+    \begin{columns}
+      \begin{column}{0.58\textwidth}
+        \begin{itemize}
+          \item Implemented in Python using PuLP library
+          \item CBC solver from PuLP used for optimization
+          \item Interactive browser-based GUI developed:
+            \begin{itemize}
+              \item Parameter input for robot specifications
+              \item Waypoint location setting
+              \item Real-time solution visualization
+            \end{itemize}
+          \item Code available at \href{https://github.com/jc-cr/multirobot_inspection_optimizer}{GitHub repository}
+    \end{itemize}
+        
+      \end{column}
+
+
+      \begin{column}{0.42\textwidth}
         \begin{figure}
           \centering
-          \includegraphics[width=0.48\linewidth]{figures/insp.pdf}
+          \includegraphics[scale=0.2]{figures/insp.pdf}
         \end{figure}
+        
+      \end{column}
+    \end{columns}
+    
+    
       \end{frame}
 
       \begin{frame}{Numerical Results - Computational Performance}
+
         \begin{itemize}
           \item Testing environment: 
             \begin{itemize}
             \item Intel i7, Python 3.12 Docker container
           \end{itemize}
-        \item Tested waypoint scaling (5 to 25 waypoints) and map size scaling (100 to 1000 m)
+        \item Tested waypoint scaling (5 to 25 waypoints in 1000 m map ) and map size scaling (100 to 1000 m with 20 random waypoints)
         \item Non-monotonic scaling behavior:
           \begin{itemize}
             \item Solution time peaks at 15 waypoints then decreases
@@ -300,8 +321,8 @@
       % Insert performance figures
       \begin{figure}
         \centering
-        \includegraphics[width=0.48\linewidth]{figures/waypoints_vs_time.pdf}
-        \includegraphics[width=0.48\linewidth]{figures/map_size_vs_time.pdf}
+        \includegraphics[scale=0.19]{figures/waypoints_vs_time.pdf}
+        \includegraphics[scale=0.19]{figures/map_size_vs_time.pdf}
       \end{figure}
     \end{frame}
 
@@ -332,14 +353,14 @@
       \begin{column}{0.46\textwidth}
         \begin{figure}
           \centering
-          \includegraphics[width=\textwidth]{figures/sensitivity_ground_speed.pdf}
+          \includegraphics[scale=0.22]{figures/sensitivity_ground_speed.pdf}
         \end{figure}
       \end{column}
       
       \begin{column}{0.46\textwidth}
         \begin{figure}
           \centering
-          \includegraphics[width=\textwidth]{figures/sensitivity_ground_max_time.pdf}
+          \includegraphics[scale=0.22]{figures/sensitivity_ground_max_time.pdf}
         \end{figure}
       \end{column}
     \end{columns}
@@ -349,14 +370,14 @@
       \begin{column}{0.46\textwidth}
         \begin{figure}
           \centering
-          \includegraphics[width=\textwidth]{figures/sensitivity_ground_inspection_time.pdf}
+          \includegraphics[scale=0.22]{figures/sensitivity_ground_inspection_time.pdf}
         \end{figure}
       \end{column}
       
       \begin{column}{0.46\textwidth}
         \begin{figure}
           \centering
-          \includegraphics[width=\textwidth]{figures/sensitivity_num_ground_robots.pdf}
+          \includegraphics[scale=0.22]{figures/sensitivity_num_ground_robots.pdf}
         \end{figure}
       \end{column}
     \end{columns}
@@ -367,14 +388,14 @@
     \begin{column}{0.46\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth]{figures/sensitivity_aerial_speed.pdf}
+        \includegraphics[scale=0.22]{figures/sensitivity_aerial_speed.pdf}
       \end{figure}
     \end{column}
     
     \begin{column}{0.46\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth]{figures/sensitivity_aerial_max_time.pdf}
+        \includegraphics[scale=0.22]{figures/sensitivity_aerial_max_time.pdf}
       \end{figure}
     \end{column}
   \end{columns}
@@ -384,14 +405,14 @@
     \begin{column}{0.46\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth]{figures/sensitivity_aerial_inspection_time.pdf}
+        \includegraphics[scale=0.22]{figures/sensitivity_aerial_inspection_time.pdf}
       \end{figure}
     \end{column}
     
     \begin{column}{0.46\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth]{figures/sensitivity_num_aerial_robots.pdf}
+        \includegraphics[scale=0.22]{figures/sensitivity_num_aerial_robots.pdf}
       \end{figure}
     \end{column}
   \end{columns}

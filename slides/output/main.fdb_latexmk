@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1746071536.12604 "/project/src/main.tex" "output/main.pdf" "main" 1746071538.10739 0
-  "/project/src/main.tex" 1746071535.83817 15893 8632fe393b4ee3076cbc55ef85c11136 ""
+["pdflatex"] 1746120186.24421 "/project/src/main.tex" "output/main.pdf" "main" 1746120188.05935 0
+  "/project/src/main.tex" 1746120185.93396 16387 aa390183e039454e4afedc67b73df8e1 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/sourcesanspro/a_emkxm5.enc" 1587936753 3021 665788e9679767ade2a71155215d25e0 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/adobe/sourcesanspro/SourceSansPro-Bold-tlf-t1--base.tfm" 1587936753 1648 77a748afe0a406be1ac3f29e1cd365cb ""
@@ -267,12 +267,12 @@
   "figures/sensitivity_num_ground_robots.pdf" 1744842380.4208 38141 3522aa47e4da860a49fd48727c1ec873 ""
   "figures/tornado_chart.pdf" 1744842380.4828 34071 011d8e132299aaa8ca9e9a0142153e3d ""
   "figures/waypoints_vs_time.pdf" 1744842380.5428 40416 668d34468b91c849a3ae328ae012d77c ""
-  "output/../include/slide.sty" 1746071151.81284 4402 5a4630deba17c9ad42e07c00ce9aa597 ""
+  "output/../include/slide.sty" 1746117119.29784 4400 e91b3e14b53a959a050a6f165f156a20 ""
   "output/../include/utsa-logo.pdf" 1746069654.10214 12439 1fc3c343829944d223bbce75d976e12a ""
-  "output/main.aux" 1746071537.93821 3528 fdfa7ce1363a7a37a794a21fdc24c44a "pdflatex"
-  "output/main.nav" 1746071537.93921 2411 8c6bbe43bf923ac88764b8cf06f7ccff "pdflatex"
-  "output/main.out" 1746071536.92219 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "src/main.tex" 1746071535.83817 15893 8632fe393b4ee3076cbc55ef85c11136 ""
+  "output/main.aux" 1746120187.90896 3657 326d769d85856df1c882340b683ed8bf "pdflatex"
+  "output/main.nav" 1746120187.90996 2504 f282411faecc54988344dd4ba00e9875 "pdflatex"
+  "output/main.out" 1746120186.98596 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "src/main.tex" 1746120185.93396 16387 aa390183e039454e4afedc67b73df8e1 ""
   (generated)
   "output/main.aux"
   "output/main.log"
