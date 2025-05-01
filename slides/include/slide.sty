@@ -1,0 +1,140 @@
+% --- UTSA Theme Colors and Style ---
+% For main.tex: add aspectratio=169 to documentclass for 16:9 format
+
+% Define UTSA colors
+\definecolor{utsaDarkBlue}{HTML}{0C2340}  % Dark blue color
+\definecolor{utsaOrange}{HTML}{F15A22}    % Orange color
+
+% --- Fonts ---
+\usefonttheme{professionalfonts}
+\usepackage{sourcesanspro}
+\usepackage{sourcecodepro}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,eucal,bbold,bm}
+\usepackage[italic,eulergreek,symbolmisc]{mathastext}
+\usepackage{url}
+
+% Required for \NewDocumentCommand with 'g' type arguments
+\usepackage{xparse}
+
+% Microtypography
+\usepackage{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% Correct spacing around letters in math (preserving your original settings)
+\MTsetmathskips{y}{1mu}{0mu}
+\MTsetmathskips{j}{1.5mu}{0mu}
+
+% --- Beamer theme ---
+\usetheme{Boadilla}
+\usecolortheme{default}
+\setbeamercovered{transparent}
+
+% Completely disable navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% --- Font sizes and shapes ---
+\setbeamerfont{title}{size=\huge, series=\bfseries}
+\setbeamerfont{author}{size=\large}
+\setbeamerfont{frametitle}{series=\bfseries}
+\setbeamerfont{itemize/enumerate subbody}{size=\normalsize}
+\setbeamerfont{button}{size=\footnotesize}
+
+
+
+
+% --- Spacing ---
+\usepackage[onehalfspacing]{setspace}
+\setbeamertemplate{title page}[default][left,leftskip=-8pt]
+\addtobeamertemplate{frametitle}{\vskip3mm}{}
+\setbeamersize{text margin left=5mm,text margin right=5mm}
+
+% --- Custom UTSA header and orange line ---
+\setbeamertemplate{headline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1cm,dp=0ex]{utsaHeader}%
+    \hspace{0.5cm}\includegraphics[height=0.6cm]{../include/utsa-logo.pdf}%
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.05cm,dp=0ex]{utsaOrangeLine}{}%
+  \end{beamercolorbox}%
+}
+
+% --- Colors ---
+\setbeamercolor{utsaHeader}{bg=utsaDarkBlue, fg=white}
+\setbeamercolor{utsaOrangeLine}{bg=utsaOrange, fg=utsaOrange}
+\setbeamercolor{title}{fg=utsaDarkBlue}
+\setbeamercolor{frametitle}{fg=utsaDarkBlue}
+\setbeamercolor{normal text}{fg=utsaDarkBlue}
+\setbeamercolor{itemize item}{fg=utsaOrange}
+\setbeamercolor{itemize subitem}{fg=utsaOrange} 
+\setbeamercolor{enumerate item}{fg=utsaOrange} 
+\setbeamercolor{enumerate subitem}{fg=utsaOrange}
+\setbeamercolor{button}{fg=utsaOrange, bg=white}
+\setbeamercolor{alerted text}{fg=utsaOrange}
+\setbeamercolor{structure}{fg=utsaOrange}
+
+% --- Slide numbers at the bottom (preserving your original settings) ---
+\setbeamertemplate{footline}[frame number]
+
+
+% --- Lists ---
+\setbeamertemplate{itemize item}{\color{utsaOrange}$\bullet$}
+\setbeamertemplate{itemize subitem}{\color{utsaOrange}\textendash} 
+\setbeamertemplate{enumerate item}[default]
+\setbeamertemplate{enumerate subitem}[default]
+\setbeamertemplate{enumerate subitem}{\alph{enumii}.}
+
+% --- Alerts ---
+% Standard alert (orange)
+\NewDocumentCommand{\al}{o g}{%
+\IfNoValueTF{#1}{\textcolor{utsaOrange}{#2}}%
+{\textcolor<#1>{utsaOrange}{#2}}}
+
+% Blue alert
+\NewDocumentCommand{\alb}{o g}{%
+\IfNoValueTF{#1}{\textcolor{utsaDarkBlue}{#2}}%
+{\textcolor<#1>{utsaDarkBlue}{#2}}}
+
+% --- Section slide ---
+\newcommand{\heading}[1]{\LARGE\bfseries\color{utsaDarkBlue}\singlespacing{#1}\vspace{-3mm}\\\color{utsaOrange}{\rule{\textwidth}{2pt}}}
+
+% Define empty last slide (no parameters needed)
+\newcommand{\lastslide}{%
+  \begin{frame}[plain]
+    \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight]{utsaHeader}
+      % Just the blue background with no content
+    \end{beamercolorbox}
+  \end{frame}
+}
+
+% Redefine with parameters if contact info is provided
+\newcommand{\lastslideWithInfo}[6]{%
+  % #1: Presenter name
+  % #2: Position/title
+  % #3: Institution
+  % #4: Address line 1
+  % #5: Address line 2
+  % #6: Email
+  \begin{frame}[plain]
+    \begin{beamercolorbox}[wd=\paperwidth,ht=\paperheight]{utsaHeader}
+      \vspace{1.5cm}
+      \begin{center}
+        \vspace{0.5cm}
+        {\Huge\textbf{#1}\par}
+        \vspace{0.2cm}
+        {\color{utsaOrange}\rule{0.5\textwidth}{2pt}\par}
+        \vspace{1cm}
+      \end{center}
+      
+      \begin{flushleft}
+        \hspace{2cm}
+        \begin{minipage}{0.8\textwidth}
+          {\large\textit{#2}}\\[0.2cm]
+          {\large\textbf{#3}}\\[0.2cm]
+          #4\\
+          #5\\[0.2cm]
+          Email: \href{mailto:#6}{#6}
+        \end{minipage}
+      \end{flushleft}
+    \end{beamercolorbox}
+  \end{frame}
+}
